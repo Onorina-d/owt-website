@@ -1,15 +1,27 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 
+// Deployment target. Defaults to the production domain at the root; the GitHub
+// Pages workflow sets SITE_URL=https://onorina-d.github.io BASE_PATH=/owt-website.
+/** @type {Record<string, string | undefined>} */
+const env = /** @type {any} */ (globalThis).process.env;
+const site = env.SITE_URL ?? 'https://www.owt.com.ua';
+const base = env.BASE_PATH ?? '/';
+const withBase = (/** @type {Record<string, string>} */ map) =>
+  Object.fromEntries(Object.entries(map).map(([from, to]) => [from, base.replace(/\/+$/, '') + to]));
+
 export default defineConfig({
-  site: 'https://www.owt.com.ua',
+  site,
+  base,
+  trailingSlash: 'ignore',
   i18n: {
     defaultLocale: 'uk',
     locales: ['uk', 'en'],
     routing: { prefixDefaultLocale: false },
   },
   // Old owt.com.ua URLs → new pages (keeps inbound links and search equity)
-  redirects: {
+  // (targets are prefixed with the base path — Astro doesn't do that itself)
+  redirects: withBase({
     '/uslugi': '/posluhy/',
     '/uslugi/services': '/posluhy/hidrotekhnika/',
     '/uslugi/tree-transplant': '/posluhy/peresadka-derev/',
@@ -34,7 +46,7 @@ export default defineConfig({
     '/pontoni-prichali-pirsi-2': '/posluhy/budivnytstvo-na-vodi/',
     '/glavnaya-english': '/en/',
     '/thank-you': '/kontakty/',
-  },
+  }),
   image: {
     responsiveStyles: false,
   },

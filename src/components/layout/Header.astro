@@ -9,6 +9,7 @@ import Icon from '../ui/Icon.astro';
 import { phones, messengers } from '../../data/site';
 import { routes, directionLinks } from '../../data/routes';
 import { getDict, homePath, type Locale } from '../../i18n';
+import { withBase, stripBase } from '../../lib/paths';
 
 interface Props {
   locale: Locale;
@@ -20,7 +21,8 @@ const t = getDict(locale);
 const other: Locale = locale === 'uk' ? 'en' : 'uk';
 const path = Astro.url.pathname;
 const isHome = path === homePath(locale);
-const isCurrent = (href: string) => !href.startsWith('#') && href !== '/' && path.startsWith(href);
+const isCurrent = (href: string) => !href.startsWith('#') && href !== withBase('/') && path.startsWith(href);
+const is404 = stripBase(path).startsWith('/404');
 const requestHref = isHome ? '#request' : routes.request();
 const servicesSub = locale === 'uk' ? [...directionLinks, { id: 'fleet', href: routes.fleet, label: 'Оренда техніки' }] : [];
 ---
@@ -36,7 +38,7 @@ const servicesSub = locale === 'uk' ? [...directionLinks, { id: 'fleet', href: r
         {
           t.nav.map((item, i) => (
             <li class:list={{ 'has-sub': i === 0 && servicesSub.length > 0 }}>
-              <a href={item.href} data-nav-link aria-current={isCurrent(item.href) ? 'page' : undefined}>
+              <a href={withBase(item.href)} data-nav-link aria-current={isCurrent(withBase(item.href)) ? 'page' : undefined}>
                 {item.label}
               </a>
               {i === 0 && servicesSub.length > 0 && (
@@ -62,7 +64,7 @@ const servicesSub = locale === 'uk' ? [...directionLinks, { id: 'fleet', href: r
     <div class="header__aside">
       <a class="header__phone" href={phones[0].href}>{phones[0].display}</a>
       <div class="header__lang" role="group" aria-label={t.ui.langLabel}>
-        <a href={locale === 'uk' && !path.startsWith('/404') ? path : homePath('uk')} aria-current={locale === 'uk' ? 'true' : undefined} lang="uk">UA</a>
+        <a href={locale === 'uk' && !is404 ? path : homePath('uk')} aria-current={locale === 'uk' ? 'true' : undefined} lang="uk">UA</a>
         <span aria-hidden="true">/</span>
         <a href={homePath('en')} aria-current={locale === 'en' ? 'true' : undefined} lang="en">EN</a>
       </div>
@@ -93,7 +95,7 @@ const servicesSub = locale === 'uk' ? [...directionLinks, { id: 'fleet', href: r
       {
         t.nav.map((item, i) => (
           <li style={`--i:${i}`}>
-            <a href={item.href} data-menu-link aria-current={isCurrent(item.href) ? 'page' : undefined}>
+            <a href={withBase(item.href)} data-menu-link aria-current={isCurrent(withBase(item.href)) ? 'page' : undefined}>
               <span class="mono">{String(i + 1).padStart(2, '0')}</span>
               <span class="menu__label">{item.label}</span>
             </a>

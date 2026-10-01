@@ -9,6 +9,7 @@
 import Button from '../ui/Button.astro';
 import Icon from '../ui/Icon.astro';
 import { getDict, type Locale } from '../../i18n';
+import { routes } from '../../data/routes';
 
 interface Props {
   locale: Locale;
@@ -81,7 +82,7 @@ const copy = {
       <Icon name="close" size={20} />
     </button>
 
-    <form class="rm__form" data-rm-form method="post" action="/kontakty/#request" novalidate>
+    <form class="rm__form" data-rm-form method="post" action={routes.request()} novalidate>
       <div class="rm__fields" data-rm-fields>
         <header class="rm__head">
           <p class="mono rm__kicker">{copy.kicker}</p>

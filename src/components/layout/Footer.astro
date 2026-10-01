@@ -2,6 +2,7 @@
 import Icon from '../ui/Icon.astro';
 import { phones, socials } from '../../data/site';
 import { routes, directionLinks } from '../../data/routes';
+import { withBase } from '../../lib/paths';
 import { getDict, homePath, type Locale } from '../../i18n';
 
 interface Props {
@@ -42,7 +43,7 @@ const t = d.footer;
         {
           d.nav.map((item) => (
             <li>
-              <a href={item.href}>{item.label}</a>
+              <a href={withBase(item.href)}>{item.label}</a>
             </li>
           ))
         }
@@ -86,7 +87,7 @@ const t = d.footer;
   </div>
 
   <div class="container footer__mark">
-    <img class="footer__logo" src="/brand/owt-logo-paper.svg" width="1515" height="506" alt="OWT — Ost West Technology" loading="lazy" decoding="async" />
+    <img class="footer__logo" src={withBase("/brand/owt-logo-paper.svg")} width="1515" height="506" alt="OWT — Ost West Technology" loading="lazy" decoding="async" />
   </div>
 
   <div class="container footer__bar mono">

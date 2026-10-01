@@ -2,6 +2,7 @@
  * Internal link checker for the built site.
  *
  *   npm run build && node scripts/check-links.mjs
+ *   BASE_PATH=/owt-website npm run build && BASE_PATH=/owt-website node scripts/check-links.mjs
  *
  * Walks every HTML file in dist/, collects href/src values that point inside
  * the site and verifies that the target file exists and that #anchors exist
@@ -13,6 +14,9 @@ import { fileURLToPath } from 'node:url';
 
 const root = path.join(path.dirname(path.dirname(fileURLToPath(import.meta.url))), 'dist');
 
+// Sub-path the site is served from (GitHub Pages), e.g. '/owt-website'.
+const base = (process.env.BASE_PATH ?? '').replace(/\/+$/, '');
+
 const htmlFiles = [];
 (function walk(dir) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -22,7 +26,7 @@ const htmlFiles = [];
   }
 })(root);
 
-const pageUrl = (file) => '/' + path.relative(root, file).replace(/index\.html$/, '').replace(/\\/g, '/');
+const pageUrl = (file) => base + '/' + path.relative(root, file).replace(/index\.html$/, '').replace(/\\/g, '/');
 const idsCache = new Map();
 function idsOf(file) {
   if (!idsCache.has(file)) {
@@ -32,7 +36,12 @@ function idsOf(file) {
   return idsCache.get(file);
 }
 function resolveTarget(urlPath) {
-  const clean = decodeURIComponent(urlPath.split('?')[0]);
+  let clean = decodeURIComponent(urlPath.split('?')[0]);
+  if (base) {
+    // every internal URL must live under the base path
+    if (clean !== base && !clean.startsWith(base + '/')) return undefined;
+    clean = clean.slice(base.length) || '/';
+  }
   const candidates = clean.endsWith('/')
     ? [path.join(root, clean, 'index.html')]
     : [path.join(root, clean), path.join(root, clean, 'index.html'), path.join(root, clean + '.html')];

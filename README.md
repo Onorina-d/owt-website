@@ -36,6 +36,22 @@ node scripts/check-links.mjs        # проверка внутренних сс
 Режим `dev` не подходит для оценки скорости: каждое изображение
 генерируется при первом запросе. Реальную скорость показывает `build` + `preview`.
 
+## Публикация на GitHub Pages
+
+Сайт собирается и публикуется автоматически при каждом push в `main`
+(`.github/workflows/deploy.yml`) по адресу https://onorina-d.github.io/owt-website/.
+
+Подпапка задаётся переменными окружения при сборке; без них сайт собирается
+для корня домена (локально, будущий owt.com.ua):
+
+```bash
+BASE_PATH=/owt-website SITE_URL=https://onorina-d.github.io npm run build
+BASE_PATH=/owt-website node scripts/check-links.mjs
+```
+
+Все внутренние ссылки в коде проходят через `withBase()` из `src/lib/paths.ts`
+(маршруты — через `src/data/routes.ts`); шрифты импортируются из `src/assets/fonts`.
+
 ## Структура
 
 ```

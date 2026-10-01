@@ -1,19 +1,20 @@
 /** Every internal URL in one place, so links never drift from the pages. */
 import type { TopicId } from '../i18n/uk';
+import { withBase } from '../lib/paths';
 
 export const routes = {
-  home: '/',
-  services: '/posluhy/',
-  hydro: '/posluhy/hidrotekhnika/',
-  water: '/posluhy/budivnytstvo-na-vodi/',
-  trees: '/posluhy/peresadka-derev/',
-  fleet: '/tekhnika/',
-  projects: '/proekty/',
-  project: (slug: string) => `/proekty/${slug}/`,
-  about: '/pro-kompaniiu/',
-  contacts: '/kontakty/',
+  home: withBase('/'),
+  services: withBase('/posluhy/'),
+  hydro: withBase('/posluhy/hidrotekhnika/'),
+  water: withBase('/posluhy/budivnytstvo-na-vodi/'),
+  trees: withBase('/posluhy/peresadka-derev/'),
+  fleet: withBase('/tekhnika/'),
+  projects: withBase('/proekty/'),
+  project: (slug: string) => withBase(`/proekty/${slug}/`),
+  about: withBase('/pro-kompaniiu/'),
+  contacts: withBase('/kontakty/'),
   /** Contact form, optionally with a pre-selected topic. */
-  request: (topic?: TopicId) => `/kontakty/${topic ? `?topic=${topic}` : ''}#request`,
+  request: (topic?: TopicId) => withBase(`/kontakty/${topic ? `?topic=${topic}` : ''}#request`),
 } as const;
 
 /** Directions (service pages) in display order. */

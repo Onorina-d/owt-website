@@ -1,0 +1,299 @@
+---
+/**
+ * About the company — statement, facts, directions of the group, one real
+ * result photo with its project caption, the shared process, addresses.
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import PageHead from '../components/page/PageHead.astro';
+import SectionHead from '../components/page/SectionHead.astro';
+import Process from '../components/sections/Process.astro';
+import CtaBand from '../components/page/CtaBand.astro';
+import Img from '../components/ui/Img.astro';
+import Icon from '../components/ui/Icon.astro';
+import { media } from '../data/media';
+import { routes, directionLinks } from '../data/routes';
+
+const facts = [
+  { value: '24', unit: 'роки', label: 'історія групи компаній' },
+  { value: '10+', unit: 'років', label: 'досвід у будівництві на воді' },
+  { value: 'Тисячі', unit: '', label: 'виконаних робіт' },
+  { value: 'Україна', unit: '', label: 'та за кордоном' },
+  { value: 'Власне', unit: '', label: 'виробництво понтонів' },
+  { value: 'Договір', unit: '', label: 'та ПДВ' },
+];
+const dirs = [
+  ...directionLinks.map((d) => ({ href: d.href, label: d.label })),
+  { href: routes.fleet, label: 'Оренда техніки' },
+];
+const addresses = [
+  { city: 'Київ', line: 'вул. Володимира Івасюка, 6Б, корпус 1', q: 'Київ, вулиця Володимира Івасюка, 6Б' },
+  { city: 'Бородянка, Київська обл.', line: 'вул. Індустріальна, 2', q: 'Бородянка, вулиця Індустріальна, 2' },
+];
+---
+
+<PageLayout
+  headerTone="over"
+  title="Про компанію — OWT · Ost West Technology"
+  description="OST WEST TECHNOLOGY — група компаній, що протягом 24 років є надійним постачальником якісних товарів та послуг для промислових і приватних споживачів в Україні та за кордоном."
+>
+  <PageHead
+    theme="ink"
+    layout="type"
+    crumbs={[{ href: routes.home, label: 'Головна' }, { label: 'Про компанію' }]}
+    label="Ost West Technology"
+    title="Про компанію"
+    lead="OST WEST TECHNOLOGY — група компаній, що протягом 24 років є надійним постачальником якісних товарів та послуг для промислових і приватних споживачів в Україні та за кордоном."
+  />
+
+  <section class="sec theme-paper">
+    <div class="container">
+      <SectionHead n="01" label="Ключові факти" title="Нам є чим пишатися" lead="Це підтверджують тисячі виконаних робіт і безліч задоволених замовників." />
+      <dl class="facts">
+        {
+          facts.map((f, i) => (
+            <div class="fact" data-reveal style={`--d:${i % 3}`}>
+              <dt class="fact__label mono">{f.label}</dt>
+              <dd class="fact__value">
+                {f.value}
+                {f.unit && <span class="fact__unit">{f.unit}</span>}
+              </dd>
+            </div>
+          ))
+        }
+      </dl>
+      <p class="facts__note muted" data-reveal>
+        Пересадка дерев: успішні контракти з відомими європейськими компаніями.
+      </p>
+    </div>
+  </section>
+
+  <section class="sec theme-ink">
+    <div class="container result">
+      <figure class="result__fig" data-reveal>
+        <div class="result__img media-frame" data-wipe>
+          <Img src={media.marinaAerial} alt="Акваторія з бетонними пірсами — аерозйомка проєкту OWT" sizes="(min-width: 1024px) 58vw, 100vw" />
+        </div>
+        <figcaption class="mono muted">
+          <a href={routes.project('ukriplennya-berega-betonni-pontony')}>Укріплення берега бетоном і бетонні понтони — проєкт OWT</a>
+        </figcaption>
+      </figure>
+      <div class="result__text">
+        <p class="mono muted" data-reveal>Підхід</p>
+        <p class="result__statement" data-reveal style="--d:1">
+          Ми використовуємо новітнє обладнання та спецтехніку, що дозволяє виконувати проєкти та завдання будь-якої складності у найкоротші терміни.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec theme-stone">
+    <div class="container">
+      <SectionHead n="02" label="Напрями" title="Чим займається група" size="h3" />
+      <ul class="dirs">
+        {
+          dirs.map((d, i) => (
+            <li data-reveal style={`--d:${i}`}>
+              <a class="dirs__link" href={d.href}>
+                <span class="mono muted">{String(i + 1).padStart(2, '0')}</span>
+                <span class="dirs__title">{d.label}</span>
+                <Icon name="arrow" size={20} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <Process locale="uk" n="03" />
+
+  <section class="sec theme-paper">
+    <div class="container">
+      <SectionHead n="04" label="Адреси" title="Де нас знайти" size="h3" />
+      <ul class="addr">
+        {
+          addresses.map((a) => (
+            <li class="addr__item" data-reveal>
+              <span class="addr__city">{a.city}</span>
+              <span class="muted">{a.line}</span>
+              <a class="addr__map" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(a.q)}`} target="_blank" rel="noopener">
+                Відкрити на мапі <Icon name="arrow" size={16} />
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand title="Обговорімо ваш об’єкт" text="Інженер OWT проаналізує задачу та зорієнтує щодо бюджету і строків." />
+</PageLayout>
+
+<style>
+  .sec {
+    padding-block: var(--section-pad);
+  }
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin: 0;
+    border-top: 1px solid var(--rule-on-paper);
+  }
+  .fact {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: 16px;
+    min-height: 180px;
+    padding: 26px clamp(14px, 2vw, 28px);
+    border-bottom: 1px solid var(--rule-on-paper);
+    border-right: 1px solid var(--rule-on-paper);
+  }
+  .fact:nth-child(3n) {
+    border-right: 0;
+  }
+  .fact:nth-child(3n + 1) {
+    padding-left: 0;
+  }
+  .fact__label {
+    color: var(--on-paper-muted);
+    max-width: 24ch;
+  }
+  .fact__value {
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 0.3em;
+    font-size: clamp(2.5rem, 4.4vw, 4.75rem);
+    font-weight: 450;
+    line-height: 0.95;
+    letter-spacing: -0.045em;
+  }
+  .fact__unit {
+    font-size: 0.32em;
+    letter-spacing: -0.01em;
+    color: var(--on-paper-muted);
+  }
+  .facts__note {
+    margin-top: 28px;
+    font-size: 1rem;
+  }
+
+  .result {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 40px clamp(32px, 5vw, 88px);
+    align-items: end;
+  }
+  .result__fig {
+    display: grid;
+    gap: 14px;
+  }
+  .result__img {
+    aspect-ratio: 3 / 2;
+    --wipe-slant: 0.45;
+  }
+  .result__fig a {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+  .result__text {
+    display: grid;
+    gap: 20px;
+  }
+  .result__statement {
+    font-size: var(--fs-statement);
+    font-weight: 450;
+    line-height: 1.14;
+    letter-spacing: -0.025em;
+    text-wrap: pretty;
+  }
+
+  .dirs {
+    border-top: 1px solid var(--rule-on-paper);
+  }
+  .dirs__link {
+    display: grid;
+    grid-template-columns: 4em minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 20px;
+    padding: clamp(20px, 2.4vw, 32px) 0;
+    border-bottom: 1px solid var(--rule-on-paper);
+    transition: padding var(--dur-2) var(--ease-out);
+  }
+  .dirs__title {
+    font-size: clamp(1.5rem, 2.8vw, 2.75rem);
+    font-weight: 500;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+  }
+  .dirs__link:hover {
+    padding-left: 12px;
+  }
+
+  .addr {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--col-gap);
+  }
+  .addr__item {
+    display: grid;
+    gap: 10px;
+    padding: clamp(24px, 3vw, 40px);
+    border-radius: var(--radius-panel);
+    border: 1px solid var(--rule-on-paper);
+  }
+  .addr__city {
+    font-size: var(--fs-h4);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  .addr__map {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    justify-self: start;
+    margin-top: 10px;
+    padding-bottom: 4px;
+    font-weight: 500;
+    background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
+  }
+
+  @media (max-width: 1023px) {
+    .result {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 767px) {
+    .facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .fact,
+    .fact:nth-child(3n + 1) {
+      min-height: 140px;
+      padding: 20px 12px;
+    }
+    .fact:nth-child(3n) {
+      border-right: 1px solid var(--rule-on-paper);
+    }
+    .fact:nth-child(even) {
+      border-right: 0;
+    }
+    .fact:nth-child(odd) {
+      padding-left: 0;
+    }
+    .fact__value {
+      font-size: clamp(2rem, 9vw, 2.75rem);
+    }
+    .addr {
+      grid-template-columns: 1fr;
+    }
+    .dirs__link {
+      grid-template-columns: 2.6em minmax(0, 1fr) auto;
+    }
+    .dirs__link:hover {
+      padding-left: 0;
+    }
+  }
+</style>

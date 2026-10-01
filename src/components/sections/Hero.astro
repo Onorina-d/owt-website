@@ -1,0 +1,419 @@
+---
+/**
+ * Cinematic hero: full-bleed aerial sequence of real OWT sites with slow
+ * push-in and a diagonal (logo-angle) wipe between shots. On scroll the media
+ * sinks and darkens while the type lifts away, handing over to the ink intro.
+ */
+import Button from '../ui/Button.astro';
+import Img from '../ui/Img.astro';
+import Icon from '../ui/Icon.astro';
+import { media, portraitOf } from '../../data/media';
+import { videos } from '../../data/site';
+import { getDict, type Locale } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getDict(locale).hero;
+const total = String(t.slides.length).padStart(2, '0');
+---
+
+<section class="hero theme-ink" data-hero data-header-over data-paused aria-labelledby="hero-title">
+  <div class="hero__media" data-hero-media>
+    {
+      t.slides.map((s, i) => (
+        <div
+          class:list={['hero__slide', { 'is-active': i === 0 }]}
+          data-slide
+          data-caption={s.caption}
+          style={`--pos:${s.position}`}
+        >
+          <Img
+            src={media[s.image]}
+            mobile={portraitOf[s.image]}
+            alt={s.caption}
+            sizes="100vw"
+            loading={i === 0 ? 'eager' : 'lazy'}
+            fetchpriority={i === 0 ? 'high' : undefined}
+            defer={i > 0}
+          />
+        </div>
+      ))
+    }
+    <div class="hero__scrim" aria-hidden="true"></div>
+    <div class="hero__veil" aria-hidden="true"></div>
+  </div>
+
+  <div class="hero__content container" data-hero-content>
+    <p class="hero__eyebrow mono" data-reveal style="--d:4">{t.eyebrow}</p>
+    <h1 class="hero__title" id="hero-title" data-lines style="--base-delay:60ms">
+      {
+        t.title.map((line, i) => (
+          <span class="line" style={`--i:${i}`}>
+            <span>{line}</span>
+          </span>
+        ))
+      }
+    </h1>
+    <div class="hero__row">
+      <p class="hero__lead" data-reveal style="--d:7">{t.lead}</p>
+      <div class="hero__actions" data-reveal style="--d:8">
+        <Button href="#request" tone="light" data-topic-link>{t.cta}</Button>
+        <button class="hero__video" type="button" data-video-open={videos.shore}>
+          <span class="hero__video-icon"><Icon name="play" size={16} /></span>
+          <span>{t.video}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero__meta container" data-reveal style="--d:10">
+    <p class="hero__caption mono" aria-live="polite">
+      <span class="hero__count"><span data-slide-index>01</span>&thinsp;/&thinsp;{total}</span>
+      <span class="hero__caption-text" data-slide-caption>{t.slides[0].caption}</span>
+    </p>
+    <div class="hero__progress" aria-hidden="true">
+      {t.slides.map((_, i) => <span class:list={['hero__bar', { 'is-active': i === 0 }]} data-bar />)}
+    </div>
+    <a class="hero__scroll mono" href="#intro">
+      <span>{t.scroll}</span>
+      <Icon name="arrow-down" size={14} />
+    </a>
+  </div>
+</section>
+
+<style>
+  .hero {
+    --p: 0;
+    --slide-ms: 7000ms;
+    position: relative;
+    height: 100vh;
+    height: 100svh;
+    min-height: 620px;
+    overflow: clip;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    background: var(--ink);
+  }
+
+  /* ---------- Media ---------- */
+  .hero__media {
+    position: absolute;
+    inset: 0;
+    transform: translate3d(0, calc(var(--p) * 22vh), 0) scale(calc(1 + var(--p) * 0.06));
+    transform-origin: 50% 100%;
+    will-change: transform;
+  }
+  .hero__slide {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    clip-path: polygon(0 0, 0 0, -60% 100%, 0 100%);
+    transition: clip-path 1700ms var(--ease-in-out);
+  }
+  .hero__slide.is-active {
+    clip-path: polygon(0 0, 160% 0, 100% 100%, 0 100%);
+    z-index: 2;
+  }
+  .hero__slide.is-prev {
+    clip-path: polygon(0 0, 160% 0, 100% 100%, 0 100%);
+    z-index: 1;
+    transition: none;
+  }
+  .hero__slide :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--pos, 50% 50%);
+    transform: scale(1.14);
+    transition: transform 9000ms cubic-bezier(0.2, 0.6, 0.3, 1);
+  }
+  .hero__slide.is-active :global(img),
+  .hero__slide.is-prev :global(img) {
+    transform: scale(1.02);
+  }
+  /* the first frame holds still until the sequence starts (see site.ts) */
+  .hero:not([data-playing]) .hero__slide :global(img) {
+    transition: none;
+  }
+  .hero__slide :global(picture) {
+    height: 100%;
+  }
+
+  .hero__scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    background:
+      linear-gradient(to top, rgb(16 19 22 / 0.86) 0%, rgb(16 19 22 / 0.5) 34%, rgb(16 19 22 / 0) 62%),
+      linear-gradient(to bottom, rgb(16 19 22 / 0.45) 0%, rgb(16 19 22 / 0) 22%);
+  }
+  .hero__veil {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    background: var(--ink);
+    opacity: calc(var(--p) * 0.85);
+  }
+
+  /* ---------- Content ---------- */
+  .hero__content {
+    position: relative;
+    z-index: 5;
+    padding-bottom: clamp(28px, 4vh, 48px);
+    transform: translate3d(0, calc(var(--p) * -14vh), 0);
+    opacity: calc(1 - var(--p) * 1.5);
+  }
+  .hero__eyebrow {
+    color: var(--on-ink-muted);
+    margin-bottom: clamp(18px, 2.4vh, 28px);
+  }
+  .hero__title {
+    font-size: clamp(2.75rem, 6.6vw, 8.75rem);
+    font-weight: 500;
+    line-height: var(--lh-tight);
+    letter-spacing: -0.045em;
+    margin-left: -0.05em;
+  }
+  .hero__title .line > span {
+    text-wrap: balance;
+  }
+  .hero__row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 32px 48px;
+    margin-top: clamp(28px, 4.5vh, 56px);
+  }
+  .hero__lead {
+    max-width: 46ch;
+    font-size: var(--fs-lead);
+    line-height: 1.5;
+    color: rgb(241 239 234 / 0.78);
+    text-wrap: pretty;
+  }
+  .hero__actions {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+  }
+  .hero__video {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    min-height: 48px;
+  }
+  .hero__video-icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-o);
+    border: 1px solid rgb(241 239 234 / 0.4);
+    transition:
+      background-color var(--dur-2) var(--ease-out),
+      color var(--dur-2) var(--ease-out),
+      transform var(--dur-2) var(--ease-out);
+  }
+  .hero__video:hover .hero__video-icon {
+    background: var(--paper);
+    color: var(--ink);
+    transform: scale(1.06);
+  }
+
+  /* ---------- Meta bar ---------- */
+  .hero__meta {
+    position: relative;
+    z-index: 5;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(120px, 280px) auto;
+    align-items: center;
+    gap: 32px;
+    min-height: 64px;
+    border-top: 1px solid var(--rule-on-ink);
+    color: var(--on-ink-muted);
+    opacity: calc(1 - var(--p) * 2);
+  }
+  .hero__meta::before {
+    /* keep hairline inside gutters */
+    content: none;
+  }
+  .hero__caption {
+    display: flex;
+    gap: 18px;
+    min-width: 0;
+  }
+  .hero__count {
+    flex: none;
+    color: var(--on-ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .hero__caption-text {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    transition: opacity 400ms var(--ease-out);
+  }
+  .hero__caption-text.is-swapping {
+    opacity: 0;
+  }
+  .hero__progress {
+    display: grid;
+    grid-auto-flow: column;
+    gap: 6px;
+  }
+  .hero__bar {
+    position: relative;
+    height: 2px;
+    background: var(--rule-on-ink);
+    overflow: hidden;
+  }
+  .hero__bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--paper);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .hero__bar.is-done::after {
+    transform: scaleX(1);
+  }
+  .hero__bar.is-active::after {
+    animation: bar var(--slide-ms) linear forwards;
+  }
+  .hero[data-paused] .hero__bar.is-active::after {
+    animation-play-state: paused;
+  }
+  @keyframes bar {
+    to {
+      transform: scaleX(1);
+    }
+  }
+  .hero__scroll {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--on-ink);
+    padding-block: 12px;
+  }
+  .hero__scroll :global(svg) {
+    animation: nudge 2.4s var(--ease-in-out) infinite;
+  }
+  @keyframes nudge {
+    0%,
+    100% {
+      transform: translateY(-2px);
+    }
+    50% {
+      transform: translateY(3px);
+    }
+  }
+
+  /* ---------- Tablet ---------- */
+  @media (max-width: 1023px) {
+    .hero__row {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  /* ---------- Mobile: its own composition ---------- */
+  @media (max-width: 767px) {
+    .hero {
+      min-height: 560px;
+    }
+    .hero__scrim {
+      background:
+        linear-gradient(to top, rgb(16 19 22 / 0.92) 0%, rgb(16 19 22 / 0.6) 42%, rgb(16 19 22 / 0) 72%),
+        linear-gradient(to bottom, rgb(16 19 22 / 0.5) 0%, rgb(16 19 22 / 0) 18%);
+    }
+    .hero__eyebrow {
+      max-width: 32ch;
+      color: rgb(241 239 234 / 0.75);
+    }
+    .hero__title {
+      font-size: clamp(2.5rem, 11.4vw, 3.6rem);
+      letter-spacing: -0.04em;
+      line-height: 0.96;
+    }
+    .hero__row {
+      gap: 24px;
+      margin-top: 22px;
+    }
+    .hero__lead {
+      font-size: 1rem;
+      max-width: 34ch;
+    }
+    .hero__actions {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+    .hero__actions :global(.btn) {
+      justify-content: space-between;
+    }
+    .hero__video {
+      justify-content: center;
+    }
+    .hero__video-icon {
+      width: 36px;
+      height: 36px;
+    }
+    .hero__meta {
+      grid-template-columns: minmax(0, 1fr) 72px;
+      min-height: 52px;
+      gap: 16px;
+    }
+    .hero__scroll {
+      display: none;
+    }
+  }
+
+  @media (max-height: 760px) and (min-width: 768px) {
+    .hero__title {
+      font-size: clamp(2.5rem, 5.4vw, 6.5rem);
+    }
+  }
+
+  /* First screen never waits for JavaScript: its entrance is pure CSS. */
+  :global(.js) .hero [data-reveal] {
+    animation: hero-rise 1100ms var(--ease-out) both;
+    animation-delay: calc(var(--d, 0) * 90ms + 150ms);
+  }
+  :global(.js) .hero [data-lines] .line > span {
+    animation: hero-line 1600ms var(--ease-out) both;
+    animation-delay: calc(var(--i, 0) * 110ms + var(--base-delay, 0ms));
+  }
+  @keyframes hero-rise {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 28px, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes hero-line {
+    from {
+      transform: translate3d(0, 105%, 0);
+    }
+    to {
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hero__media,
+    .hero__content {
+      transform: none;
+    }
+    .hero__slide :global(img) {
+      transform: none;
+    }
+  }
+</style>

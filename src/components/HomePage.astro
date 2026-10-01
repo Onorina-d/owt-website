@@ -1,0 +1,57 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import Hero from './sections/Hero.astro';
+import Intro from './sections/Intro.astro';
+import Directions from './sections/Directions.astro';
+import Projects from './sections/Projects.astro';
+import Fleet from './sections/Fleet.astro';
+import Process from './sections/Process.astro';
+import Contact from './sections/Contact.astro';
+import { getDict, type Locale } from '../i18n';
+import { media, portraitOf } from '../data/media';
+import { responsive, FULL_BLEED, PORTRAIT, PHONE_MEDIA } from '../lib/images';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+// First hero frame: preload exactly the AVIF set <Img> renders — the portrait
+// frame on phones, the landscape frame elsewhere (never both).
+const first = getDict(locale).hero.slides[0].image;
+const heroImg = await responsive(media[first], FULL_BLEED);
+const heroPortrait = portraitOf[first] ? await responsive(portraitOf[first]!, PORTRAIT) : null;
+---
+
+<PageLayout locale={locale} headerTone="over">
+  {
+    heroPortrait && (
+      <link
+        slot="head"
+        rel="preload"
+        as="image"
+        type="image/avif"
+        media={PHONE_MEDIA}
+        imagesrcset={heroPortrait.avif}
+        imagesizes="100vw"
+        fetchpriority="high"
+      />
+    )
+  }
+  <link
+    slot="head"
+    rel="preload"
+    as="image"
+    type="image/avif"
+    media={heroPortrait ? '(min-width: 768px)' : undefined}
+    imagesrcset={heroImg.avif}
+    imagesizes="100vw"
+    fetchpriority="high"
+  />
+  <Hero locale={locale} />
+  <Intro locale={locale} />
+  <Directions locale={locale} />
+  <Projects locale={locale} />
+  <Fleet locale={locale} />
+  <Process locale={locale} />
+  <Contact locale={locale} />
+</PageLayout>

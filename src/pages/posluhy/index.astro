@@ -1,0 +1,208 @@
+---
+/**
+ * Services overview — typographic opening, then an editorial index of the
+ * directions (each row fully clickable), the shared process and a CTA.
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import PageHead from '../../components/page/PageHead.astro';
+import Process from '../../components/sections/Process.astro';
+import CtaBand from '../../components/page/CtaBand.astro';
+import Img from '../../components/ui/Img.astro';
+import Icon from '../../components/ui/Icon.astro';
+import { media } from '../../data/media';
+import { routes } from '../../data/routes';
+
+const rows = [
+  {
+    href: routes.hydro,
+    title: 'Гідротехнічні роботи',
+    text: 'Комплексні гідротехнічні роботи: копка й очищення водойм земснарядами, берегоукріплення та промисловий демонтаж будівель.',
+    items: ['Копка та чистка водойм', 'Берегоукріплення', 'Укріплення схилів', 'Демонтаж споруд'],
+    image: media.dredging,
+    alt: 'Екскаватор з довгою стрілою на березі водойми — роботи OWT',
+  },
+  {
+    href: routes.water,
+    title: 'Будівництво на воді',
+    text: 'Сучасна інфраструктура яхт-клубів, понтони, причали й пірси, будинки на воді. Понад 10 років досвіду у водному будівництві.',
+    items: ['Яхт-клуби та марини', 'Понтони, причали, пірси, елінги', 'Будинки на воді'],
+    image: media.poolPontoons,
+    alt: 'Акваторія з понтонами — проєкт OWT',
+  },
+  {
+    href: routes.trees,
+    title: 'Пересадка великих дерев',
+    text: 'Посадка та пересадка крупномірних дерев з обхватом стовбура до 90 см і висотою до 20 метрів. Повна механізація процесу.',
+    items: ['Підготовка ями', 'Викопка дерева', 'Транспортування та висадка'],
+    image: media.treeLift,
+    alt: 'Машина для пересадки дерев піднімає сосну — роботи OWT',
+  },
+  {
+    href: routes.fleet,
+    title: 'Оренда техніки',
+    text: 'Здаємо в оренду спеціалізовану сучасну техніку для виконання робіт будь-якої складності.',
+    items: ['Екскаватори JCB', 'Земснаряди', 'Бульдозери CAT', 'Болотохідні КрАЗ', 'Модульні понтони'],
+    image: media.jcbPair,
+    alt: 'Екскаватори JCB — техніка OWT',
+  },
+];
+---
+
+<PageLayout
+  title="Послуги — OWT · Ost West Technology"
+  description="Гідротехнічні роботи, будівництво на воді, пересадка великих дерев та оренда спецтехніки від групи компаній OST WEST TECHNOLOGY."
+>
+  <PageHead
+    layout="type"
+    crumbs={[{ href: routes.home, label: 'Головна' }, { label: 'Послуги' }]}
+    label="Послуги OWT"
+    title="Послуги"
+    lead="Новітнє обладнання та спецтехніка для проєктів будь-якої складності у найкоротші терміни — для промислових і приватних замовників в Україні та за кордоном."
+  />
+
+  <section class="index theme-paper" aria-label="Напрями">
+    <div class="container">
+      <ol class="index__list">
+        {
+          rows.map((r, i) => (
+            <li class="row" data-reveal>
+              <span class="row__n mono">{String(i + 1).padStart(2, '0')}</span>
+              <div class="row__text">
+                <h2 class="row__title">
+                  <a href={r.href}>{r.title}</a>
+                </h2>
+                <p class="row__desc muted">{r.text}</p>
+                <ul class="row__items">
+                  {r.items.map((it) => (
+                    <li>{it}</li>
+                  ))}
+                </ul>
+                <span class="row__more" aria-hidden="true">
+                  Детальніше <Icon name="arrow" size={18} />
+                </span>
+              </div>
+              <div class="row__media media-frame">
+                <Img src={r.image} alt={r.alt} widths={[640, 960, 1280]} sizes="(min-width: 1024px) 38vw, 100vw" />
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <Process locale="uk" n="02" />
+
+  <CtaBand
+    title="Не знаєте, з чого почати?"
+    text="Інженер OWT проаналізує вашу задачу та зорієнтує щодо бюджету і строків."
+  />
+</PageLayout>
+
+<style>
+  .index {
+    padding-bottom: var(--section-pad);
+  }
+  .index__list {
+    border-top: 1px solid var(--rule-on-paper);
+  }
+  .row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 4em minmax(0, 1fr) minmax(0, 0.85fr);
+    gap: 24px clamp(24px, 4vw, 72px);
+    align-items: start;
+    padding-block: clamp(32px, 4.5vw, 64px);
+    border-bottom: 1px solid var(--rule-on-paper);
+  }
+  .row__n {
+    padding-top: 0.9em;
+    color: var(--on-paper-muted);
+  }
+  .row__text {
+    display: grid;
+    gap: 20px;
+    align-content: start;
+  }
+  .row__title {
+    font-size: clamp(2rem, 4vw, 4rem);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+  }
+  .row__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .row__desc {
+    max-width: 48ch;
+    font-size: var(--fs-lead);
+    line-height: 1.5;
+  }
+  .row__items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .row__items li {
+    padding: 8px 14px;
+    border-radius: var(--radius-o);
+    border: 1px solid var(--rule-on-paper);
+    font-size: 0.875rem;
+  }
+  .row__more {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    justify-self: start;
+    margin-top: 8px;
+    padding-bottom: 4px;
+    font-weight: 500;
+    background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
+  }
+  .row__more :global(svg) {
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+  .row__media {
+    aspect-ratio: 4 / 3;
+  }
+  .row__media :global(img) {
+    transform: scale(1.02);
+    transition: transform 1400ms var(--ease-out);
+  }
+  @media (hover: hover) {
+    .row:hover .row__media :global(img) {
+      transform: scale(1.07);
+    }
+    .row:hover .row__more :global(svg) {
+      transform: translateX(6px);
+    }
+  }
+  @media (max-width: 1023px) {
+    .row {
+      grid-template-columns: 3em minmax(0, 1fr);
+    }
+    .row__media {
+      grid-column: 2;
+    }
+  }
+  @media (max-width: 767px) {
+    .row {
+      grid-template-columns: 1fr;
+      gap: 18px;
+    }
+    .row__n {
+      padding-top: 0;
+    }
+    .row__media {
+      grid-column: 1;
+      grid-row: 2;
+    }
+    .row__desc {
+      font-size: 1rem;
+    }
+  }
+</style>

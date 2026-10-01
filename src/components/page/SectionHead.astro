@@ -1,0 +1,46 @@
+---
+/** Section opener used on inner pages: index label, title, optional lead. */
+import SectionLabel from '../ui/SectionLabel.astro';
+
+interface Props {
+  n: string;
+  label: string;
+  title: string;
+  lead?: string;
+  id?: string;
+  size?: 'h2' | 'h3';
+}
+const { n, label, title, lead, id, size = 'h2' } = Astro.props;
+---
+
+<header class="shead grid-12">
+  <SectionLabel n={n} text={label} class="shead__label" />
+  <h2 class:list={['shead__title', size === 'h2' ? 'h2' : 'h3']} id={id} data-lines>
+    <span class="line"><span>{title}</span></span>
+  </h2>
+  {lead && <p class="lead shead__lead" data-reveal style="--d:2">{lead}</p>}
+  <slot />
+</header>
+
+<style>
+  .shead {
+    row-gap: 24px;
+    padding-bottom: clamp(40px, 6vw, 88px);
+  }
+  .shead :global(.shead__label) {
+    grid-column: 1 / -1;
+  }
+  .shead__title {
+    grid-column: 1 / span 8;
+  }
+  .shead__lead {
+    grid-column: 9 / -1;
+    align-self: end;
+  }
+  @media (max-width: 1023px) {
+    .shead__title,
+    .shead__lead {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

@@ -1,0 +1,39 @@
+---
+/**
+ * Shell for every page: header, main, footer, phone dock, video dialog and
+ * the shared behaviour script. Pages only provide their own content.
+ */
+import BaseLayout from './BaseLayout.astro';
+import Header from '../components/layout/Header.astro';
+import Footer from '../components/layout/Footer.astro';
+import MobileDock from '../components/layout/MobileDock.astro';
+import VideoDialog from '../components/ui/VideoDialog.astro';
+import RequestModal from '../components/forms/RequestModal.astro';
+import type { Locale } from '../i18n';
+
+interface Props {
+  locale?: Locale;
+  title?: string;
+  description?: string;
+  /** 'over' when the page starts with a dark hero / page head marked data-header-over */
+  headerTone?: 'over' | 'solid';
+}
+const { locale = 'uk', title, description, headerTone = 'solid' } = Astro.props;
+---
+
+<BaseLayout locale={locale} title={title} description={description}>
+  <slot name="head" slot="head" />
+  <Header locale={locale} tone={headerTone} />
+  <main id="main">
+    <slot />
+  </main>
+  <Footer locale={locale} />
+  <MobileDock locale={locale} />
+  <VideoDialog locale={locale} />
+  <RequestModal locale={locale} />
+</BaseLayout>
+
+<script>
+  import { initSite } from '../scripts/site';
+  initSite();
+</script>

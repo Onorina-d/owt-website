@@ -1,0 +1,142 @@
+---
+/**
+ * Primary action. Pill shape is the only rounded form in the system (the “O”).
+ * The arrow slides through a clipped window on hover.
+ */
+import Icon from './Icon.astro';
+
+interface Props {
+  href?: string;
+  variant?: 'solid' | 'outline';
+  tone?: 'light' | 'dark';
+  type?: 'button' | 'submit';
+  icon?: 'arrow' | 'arrow-down' | 'play' | 'phone';
+  class?: string;
+  [key: string]: unknown;
+}
+
+const { href, variant = 'solid', tone = 'dark', type = 'button', icon = 'arrow', class: cls, ...rest } = Astro.props;
+const Tag = href ? 'a' : 'button';
+---
+
+<Tag
+  class:list={['btn', `btn--${variant}`, `btn--${tone}`, cls]}
+  href={href}
+  type={href ? undefined : type}
+  {...rest}
+>
+  <span class="btn__label"><slot /></span>
+  <span class="btn__icon" aria-hidden="true">
+    <span class="btn__icon-track">
+      <Icon name={icon} size={18} />
+      <Icon name={icon} size={18} />
+    </span>
+  </span>
+</Tag>
+
+<style>
+  .btn {
+    --bg: var(--ink);
+    --fg: var(--paper);
+    --bd: var(--ink);
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    min-height: 56px;
+    padding: 6px 6px 6px 26px;
+    border-radius: var(--radius-o);
+    border: 1px solid var(--bd);
+    background: var(--bg);
+    color: var(--fg);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    white-space: nowrap;
+    isolation: isolate;
+    overflow: hidden;
+    transition:
+      color var(--dur-2) var(--ease-out),
+      border-color var(--dur-2) var(--ease-out);
+  }
+  .btn--light {
+    --bg: var(--paper);
+    --fg: var(--ink);
+    --bd: var(--paper);
+  }
+  .btn--outline {
+    --bg: transparent;
+    --fg: var(--ink);
+    --bd: var(--rule-on-paper);
+  }
+  .btn--outline.btn--light {
+    --fg: var(--paper);
+    --bd: rgb(241 239 234 / 0.35);
+  }
+
+  /* Fill sweep on hover — enters along the logo diagonal */
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    background: var(--fg);
+    clip-path: polygon(-30% 0, -30% 0, -60% 100%, -60% 100%);
+    transition: clip-path var(--dur-2) var(--ease-in-out);
+  }
+  .btn--solid::before {
+    background: var(--hover-bg, var(--ink-3));
+  }
+  .btn--solid.btn--light::before {
+    --hover-bg: #ffffff;
+  }
+  .btn--outline:hover {
+    color: var(--bg-hover-fg, var(--paper));
+  }
+  .btn--outline.btn--light:hover {
+    color: var(--ink);
+  }
+  .btn:hover::before {
+    clip-path: polygon(-30% 0, 130% 0, 100% 100%, -60% 100%);
+  }
+
+  .btn__icon {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-o);
+    background: var(--fg);
+    color: var(--bg);
+    overflow: hidden;
+    transition:
+      background var(--dur-2) var(--ease-out),
+      color var(--dur-2) var(--ease-out);
+  }
+  .btn--outline .btn__icon {
+    background: transparent;
+    color: currentColor;
+    border: 1px solid currentColor;
+  }
+  .btn--solid.btn--dark .btn__icon {
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .btn__icon-track {
+    display: flex;
+    gap: 26px;
+    transform: translateX(22px);
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+  .btn:hover .btn__icon-track,
+  .btn:focus-visible .btn__icon-track {
+    transform: translateX(-22px);
+  }
+
+  @media (max-width: 767px) {
+    .btn {
+      min-height: 54px;
+      font-size: 0.9375rem;
+    }
+  }
+</style>

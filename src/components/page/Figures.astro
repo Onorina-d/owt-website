@@ -1,0 +1,92 @@
+---
+/** Technical figures as large numerals on a hairline grid (shared with the homepage fleet block). */
+interface Props {
+  items: { value: string; unit?: string; label: string; note?: string }[];
+  cols?: 2 | 3 | 4;
+}
+const { items, cols = 4 } = Astro.props;
+---
+
+<dl class="figs" data-cols={cols} style={`--cols:${cols}`}>
+  {
+    items.map((f, i) => (
+      <div class="fig" data-reveal style={`--d:${i}`}>
+        <dt class="fig__label">{f.label}</dt>
+        <dd class="fig__value">
+          <span class="fig__num">{f.value}</span>
+          {f.unit && <span class="fig__unit">{f.unit}</span>}
+        </dd>
+        {f.note && <dd class="fig__note mono">{f.note}</dd>}
+      </div>
+    ))
+  }
+</dl>
+
+<style>
+  .figs {
+    display: grid;
+    grid-template-columns: repeat(var(--cols), minmax(0, 1fr));
+    margin: 0;
+    border-top: 1px solid var(--rule);
+  }
+  .fig {
+    display: flex;
+    flex-direction: column;
+    padding: 24px clamp(14px, 2vw, 28px) 32px;
+    border-bottom: 1px solid var(--rule);
+    border-right: 1px solid var(--rule);
+  }
+  .fig__label {
+    order: 2;
+    margin-top: 14px;
+    font-size: 1rem;
+    font-weight: 450;
+  }
+  .fig__value {
+    order: 1;
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .fig__num {
+    font-size: clamp(2.75rem, 5vw, 5.5rem);
+    font-weight: 400;
+    line-height: 0.9;
+    letter-spacing: -0.055em;
+    font-variant-numeric: tabular-nums;
+  }
+  .fig__unit {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .fig__note {
+    order: 3;
+    margin: 8px 0 0;
+    color: var(--muted);
+  }
+  @media (min-width: 768px) {
+    .figs[data-cols='4'] .fig:nth-child(4n),
+    .figs[data-cols='3'] .fig:nth-child(3n),
+    .figs[data-cols='2'] .fig:nth-child(2n) {
+      border-right: 0;
+    }
+  }
+  @media (max-width: 767px) {
+    .figs {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .fig {
+      padding: 20px 14px 24px;
+    }
+    .fig:nth-child(even) {
+      border-right: 0;
+    }
+    .fig__num {
+      font-size: clamp(2.25rem, 11vw, 3rem);
+    }
+  }
+</style>

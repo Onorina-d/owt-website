@@ -1,0 +1,47 @@
+---
+/**
+ * OWT logo, traced 1:1 from assets/owt-logo.png. Never stretch it: width is
+ * set by the caller, height follows the viewBox.
+ * variant="full" — mark + “OST WEST TECHNOLOGY”; variant="mark" — letters only,
+ * for sizes where the descriptor would be illegible.
+ */
+import full from '../../assets/brand/owt-logo.svg?raw';
+import mark from '../../assets/brand/owt-mark.svg?raw';
+
+interface Props {
+  variant?: 'full' | 'mark';
+  class?: string;
+  title?: string;
+  /** define the mark once as <symbol id=…> (render normally as well) */
+  symbolId?: string;
+  /** reference a symbol defined elsewhere on the page instead of repeating the path */
+  useId?: string;
+}
+
+const { variant = 'mark', class: cls, title = 'OWT — Ost West Technology', symbolId, useId } = Astro.props;
+const raw = variant === 'full' ? full : mark;
+const viewBox = raw.match(/viewBox="([^"]+)"/)?.[1] ?? '0 0 100 100';
+const d = raw.match(/ d="([^"]+)"/)?.[1] ?? '';
+let svg: string;
+if (useId) {
+  svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" fill="currentColor" role="img" aria-label="${title}"><use href="#${useId}"/></svg>`;
+} else if (symbolId) {
+  svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" fill="currentColor" role="img" aria-label="${title}"><symbol id="${symbolId}" viewBox="${viewBox}"><path fill-rule="evenodd" d="${d}"/></symbol><use href="#${symbolId}"/></svg>`;
+} else {
+  svg = raw.replace('aria-label="OWT — Ost West Technology"', `aria-label="${title}"`);
+}
+---
+
+<span class:list={['logo', `logo--${variant}`, cls]} set:html={svg} />
+
+<style>
+  .logo {
+    display: inline-block;
+    line-height: 0;
+    color: inherit;
+  }
+  .logo :global(svg) {
+    width: 100%;
+    height: auto;
+  }
+</style>

@@ -1,0 +1,80 @@
+---
+/**
+ * Responsive <picture> (AVIF → WebP → JPEG) with intrinsic width/height to
+ * prevent layout shift.
+ *
+ * Loading modes
+ *  eager  — normal sources, high priority allowed (LCP / first screen)
+ *  lazy   — default. Sources are held in data-* and promoted by the site
+ *           script when the image is genuinely near the viewport (native lazy
+ *           loading starts up to ~2500 px early on slow connections).
+ *           A <noscript> copy keeps images working without JavaScript.
+ *  defer  — sources held until a script asks for them explicitly
+ *           (hero slides 2–3).
+ * `mobile` adds an art-directed portrait frame for phones.
+ */
+import type { ImageMetadata } from 'astro';
+import { responsive, FULL_BLEED, PORTRAIT, PHONE_MEDIA } from '../../lib/images';
+
+interface Props {
+  src: ImageMetadata;
+  mobile?: ImageMetadata;
+  alt?: string;
+  widths?: number[];
+  sizes?: string;
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'low' | 'auto';
+  defer?: boolean;
+  class?: string;
+}
+
+const {
+  src,
+  mobile,
+  alt = '',
+  widths = FULL_BLEED,
+  sizes = '100vw',
+  loading = 'lazy',
+  fetchpriority,
+  defer = false,
+  class: cls,
+} = Astro.props;
+
+const r = await responsive(src, widths);
+const m = mobile ? await responsive(mobile, PORTRAIT) : null;
+const held = defer || loading === 'lazy';
+const set = held ? 'data-srcset' : 'srcset';
+const srcAttr = held ? 'data-src' : 'src';
+---
+
+<picture class={cls} data-deferred={held ? '' : undefined} data-lazy={!defer && loading === 'lazy' ? '' : undefined}>
+  {
+    m && (
+      <>
+        <source media={PHONE_MEDIA} type="image/avif" {...{ [set]: m.avif }} sizes="100vw" />
+        <source media={PHONE_MEDIA} type="image/webp" {...{ [set]: m.webp }} sizes="100vw" />
+      </>
+    )
+  }
+  <source type="image/avif" {...{ [set]: r.avif }} sizes={sizes} />
+  <source type="image/webp" {...{ [set]: r.webp }} sizes={sizes} />
+  <img
+    {...{ [srcAttr]: r.fallback }}
+    alt={alt}
+    width={r.width}
+    height={r.height}
+    decoding="async"
+    fetchpriority={held ? undefined : fetchpriority}
+  />
+</picture>
+{
+  !defer && loading === 'lazy' && (
+    <noscript>
+      <picture class={cls}>
+        <source type="image/avif" srcset={r.avif} sizes={sizes} />
+        <source type="image/webp" srcset={r.webp} sizes={sizes} />
+        <img src={r.fallback} alt={alt} width={r.width} height={r.height} loading="lazy" decoding="async" />
+      </picture>
+    </noscript>
+  )
+}

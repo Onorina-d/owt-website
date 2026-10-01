@@ -1,0 +1,111 @@
+---
+/** Navigation between related services: the other directions + the fleet. */
+import Icon from '../ui/Icon.astro';
+import SectionHead from './SectionHead.astro';
+import { routes, directionLinks } from '../../data/routes';
+
+interface Props {
+  current?: string;
+  n: string;
+}
+const { current, n } = Astro.props;
+const notes: Record<string, string> = {
+  hydro: 'Копка та чистка водойм · берегоукріплення · укріплення схилів · демонтаж',
+  water: 'Яхт-клуби та марини · понтони, причали, пірси · будинки на воді',
+  trees: 'Обхват стовбура до 90 см · висота до 20 м · будь-яка пора року',
+  fleet: 'Екскаватори JCB · земснаряди · бульдозери CAT · КрАЗ · понтони',
+};
+const items = [...directionLinks, { id: 'fleet', href: routes.fleet, label: 'Оренда техніки' }].filter((d) => d.id !== current);
+---
+
+<section class="other theme-paper">
+  <div class="container">
+    <SectionHead n={n} label="Напрями" title="Інші напрями OWT" size="h3" />
+    <ul class="other__list">
+      {
+        items.map((d, i) => (
+          <li data-reveal style={`--d:${i}`}>
+            <a class="other__row" href={d.href}>
+              <span class="other__n mono">{String(i + 1).padStart(2, '0')}</span>
+              <span class="other__title">{d.label}</span>
+              <span class="other__note muted">{notes[d.id]}</span>
+              <span class="other__arrow" aria-hidden="true">
+                <Icon name="arrow" size={20} />
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</section>
+
+<style>
+  .other {
+    padding-block: var(--section-pad);
+  }
+  .other__list {
+    border-top: 1px solid var(--rule-on-paper);
+  }
+  .other__row {
+    display: grid;
+    grid-template-columns: 4em minmax(0, 1.2fr) minmax(0, 1fr) 48px;
+    align-items: center;
+    gap: 24px;
+    padding: clamp(22px, 2.6vw, 36px) 0;
+    border-bottom: 1px solid var(--rule-on-paper);
+    transition: padding var(--dur-2) var(--ease-out);
+  }
+  .other__n {
+    color: var(--on-paper-muted);
+  }
+  .other__title {
+    font-size: clamp(1.5rem, 2.6vw, 2.5rem);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+  .other__note {
+    font-size: 0.9375rem;
+  }
+  .other__arrow {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-o);
+    border: 1px solid var(--rule-on-paper);
+    transition:
+      background-color var(--dur-2) var(--ease-out),
+      color var(--dur-2) var(--ease-out),
+      transform var(--dur-2) var(--ease-out);
+  }
+  .other__row:hover {
+    padding-left: 12px;
+  }
+  .other__row:hover .other__arrow {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  @media (max-width: 767px) {
+    .other__row {
+      grid-template-columns: 2.6em minmax(0, 1fr) 44px;
+      gap: 6px 14px;
+    }
+    .other__note {
+      grid-column: 2 / 3;
+      grid-row: 2;
+      font-size: 0.875rem;
+    }
+    .other__arrow {
+      grid-row: 1 / span 2;
+      grid-column: 3;
+      width: 44px;
+      height: 44px;
+    }
+    .other__row:hover {
+      padding-left: 0;
+    }
+  }
+</style>

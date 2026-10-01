@@ -1,0 +1,11 @@
+# dependencies & build output
+node_modules/
+dist/
+.astro/
+
+# local tooling / OS
+.claude/
+.DS_Store
+*.log
+.env
+.env.*

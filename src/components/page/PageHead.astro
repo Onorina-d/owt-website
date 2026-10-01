@@ -1,0 +1,150 @@
+---
+/**
+ * Opening of an inner page. Three compositions so pages don’t all look alike:
+ *  split   — title column + framed photo beside it (bottom-aligned)
+ *  stacked — oversized title, lead on the right, wide framed photo below
+ *  type    — typography only
+ * theme="ink" puts the header over it in its light state.
+ */
+import type { ImageMetadata } from 'astro';
+import Breadcrumbs from '../ui/Breadcrumbs.astro';
+import Img from '../ui/Img.astro';
+
+interface Props {
+  crumbs: { href?: string; label: string }[];
+  label: string;
+  title: string;
+  lead?: string;
+  layout?: 'split' | 'stacked' | 'type';
+  theme?: 'ink' | 'paper';
+  image?: ImageMetadata;
+  imageAlt?: string;
+  caption?: string;
+}
+const { crumbs, label, title, lead, layout = 'split', theme = 'paper', image, imageAlt = '', caption } = Astro.props;
+---
+
+<section
+  class:list={['phead', `phead--${layout}`, theme === 'ink' ? 'theme-ink' : 'theme-paper']}
+  data-instant
+  data-header-over={theme === 'ink' ? '' : undefined}
+>
+  <div class="container phead__inner">
+    <div class="phead__text">
+      <Breadcrumbs items={crumbs} />
+      <p class="phead__label mono" data-reveal>{label}</p>
+      <h1 class="phead__title" data-lines>
+        <span class="line"><span>{title}</span></span>
+      </h1>
+      {lead && <p class="phead__lead" data-reveal style="--d:3">{lead}</p>}
+      <slot name="actions" />
+    </div>
+    {
+      image && layout !== 'type' && (
+        <figure class="phead__fig">
+          <div class="phead__img media-frame" data-wipe>
+            <Img
+              src={image}
+              alt={imageAlt}
+              sizes={layout === 'split' ? '(min-width: 1024px) 46vw, 100vw' : '(min-width: 1760px) 1650px, 100vw'}
+              loading="eager"
+              fetchpriority="high"
+            />
+          </div>
+          {caption && <figcaption class="mono muted">{caption}</figcaption>}
+        </figure>
+      )
+    }
+  </div>
+  <slot />
+</section>
+
+<style>
+  .phead {
+    padding-top: calc(var(--header-h) + clamp(32px, 5vw, 72px));
+    padding-bottom: clamp(56px, 8vw, 120px);
+  }
+  .phead__inner {
+    display: grid;
+    gap: 40px var(--col-gap);
+  }
+  .phead__text {
+    display: grid;
+    align-content: start;
+    gap: 22px;
+  }
+  .phead__label {
+    margin-top: clamp(24px, 4vw, 56px);
+    color: var(--muted);
+  }
+  .phead__title {
+    font-size: var(--fs-display);
+    font-weight: 500;
+    line-height: var(--lh-tight);
+    letter-spacing: -0.045em;
+    text-wrap: balance;
+  }
+  .phead__lead {
+    max-width: 46ch;
+    font-size: var(--fs-lead);
+    line-height: 1.5;
+    color: var(--muted);
+    text-wrap: pretty;
+  }
+  .phead__fig {
+    display: grid;
+    gap: 14px;
+  }
+  .phead__img {
+    --wipe-slant: 0.5;
+  }
+
+  /* split */
+  .phead--split .phead__inner {
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    align-items: end;
+  }
+  .phead--split .phead__text {
+    grid-column: 1 / span 6;
+  }
+  .phead--split .phead__fig {
+    grid-column: 7 / -1;
+  }
+  .phead--split .phead__img {
+    aspect-ratio: 4 / 3;
+  }
+  .phead--split .phead__title {
+    font-size: clamp(2.75rem, 5.6vw, 6.5rem);
+  }
+
+  /* stacked */
+  .phead--stacked .phead__img {
+    aspect-ratio: 21 / 9;
+  }
+
+  /* type */
+  .phead--type .phead__title {
+    font-size: var(--fs-mega);
+  }
+
+  @media (max-width: 1023px) {
+    .phead--split .phead__text,
+    .phead--split .phead__fig {
+      grid-column: 1 / -1;
+    }
+  }
+  @media (max-width: 767px) {
+    .phead__title,
+    .phead--split .phead__title,
+    .phead--type .phead__title {
+      font-size: clamp(2.5rem, 11.5vw, 3.5rem);
+      letter-spacing: -0.04em;
+    }
+    .phead--stacked .phead__img {
+      aspect-ratio: 4 / 3;
+    }
+    .phead__lead {
+      font-size: 1.0625rem;
+    }
+  }
+</style>

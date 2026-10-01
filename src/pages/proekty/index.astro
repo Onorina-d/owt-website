@@ -1,0 +1,124 @@
+---
+/**
+ * Projects index — one photo series in identical 4:3 frames, staggered in two
+ * columns, with a direction filter. Only projects published on the old site.
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import PageHead from '../../components/page/PageHead.astro';
+import ProjectCard from '../../components/page/ProjectCard.astro';
+import CtaBand from '../../components/page/CtaBand.astro';
+import { projects } from '../../data/projects';
+import { routes, directionLinks } from '../../data/routes';
+
+const filters = [{ id: 'all', label: 'Усі' }, ...directionLinks.map((d) => ({ id: d.id, label: d.label }))];
+const count = (id: string) => (id === 'all' ? projects.length : projects.filter((p) => p.directions.includes(id as never)).length);
+---
+
+<PageLayout
+  title="Реалізовані проєкти — OWT · Ost West Technology"
+  description="Реалізовані проєкти OWT: укріплення берега бетоном і бетонні понтони, яхт-клуб, пересадка крупномірних дерев, пірси. Фото та відео з об’єктів."
+>
+  <PageHead
+    layout="type"
+    crumbs={[{ href: routes.home, label: 'Головна' }, { label: 'Проєкти' }]}
+    label="Реалізовані проєкти"
+    title="Проєкти"
+    lead="Фото та відео з об’єктів OWT."
+  >
+    <div class="container">
+      <div class="filter" data-project-filter role="group" aria-label="Фільтр за напрямом" data-reveal style="--d:4">
+        {
+          filters.map((f, i) => (
+            <button type="button" class="filter__btn" data-filter={f.id} aria-pressed={i === 0 ? 'true' : 'false'}>
+              {f.label}
+              <span class="mono">{String(count(f.id)).padStart(2, '0')}</span>
+            </button>
+          ))
+        }
+        <p class="filter__count mono muted" aria-live="polite">
+          Показано <span data-project-count>{String(projects.length).padStart(2, '0')}</span> / {String(projects.length).padStart(2, '0')}
+        </p>
+      </div>
+    </div>
+  </PageHead>
+
+  <section class="grid theme-ink" aria-label="Список проєктів">
+    <div class="container">
+      <ul class="grid__list">
+        {
+          projects.map((p, i) => (
+            <li class:list={['grid__item', { 'is-offset': i % 2 === 1 }]} data-project-item data-directions={p.directions.join(' ')} data-reveal style={`--d:${i % 2}`}>
+              <ProjectCard project={p} index={i + 1} headingLevel="h2" />
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <CtaBand title="Маєте схожу задачу?" text="Інженер OWT проаналізує вашу задачу та зорієнтує щодо бюджету і строків." />
+</PageLayout>
+
+<style>
+  .filter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: clamp(32px, 4vw, 56px);
+    padding-top: 24px;
+    border-top: 1px solid var(--rule-on-paper);
+  }
+  .filter__btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 46px;
+    padding: 0 18px;
+    border-radius: var(--radius-o);
+    border: 1px solid var(--rule-on-paper);
+    font-size: 0.9375rem;
+    font-weight: 450;
+    transition:
+      background-color var(--dur-1),
+      color var(--dur-1),
+      border-color var(--dur-1);
+  }
+  .filter__btn .mono {
+    opacity: 0.6;
+  }
+  .filter__btn:hover {
+    border-color: var(--ink);
+  }
+  .filter__btn[aria-pressed='true'] {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .filter__count {
+    margin-left: auto;
+  }
+  .grid {
+    padding-block: var(--section-pad);
+  }
+  .grid__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: clamp(56px, 7vw, 120px) clamp(24px, 3.4vw, 64px);
+  }
+  .grid__item.is-offset {
+    margin-top: clamp(0px, 10vw, 180px);
+  }
+  @media (max-width: 767px) {
+    .grid__list {
+      grid-template-columns: 1fr;
+    }
+    .grid__item.is-offset {
+      margin-top: 0;
+    }
+    .filter__count {
+      width: 100%;
+      margin-left: 0;
+    }
+  }
+</style>

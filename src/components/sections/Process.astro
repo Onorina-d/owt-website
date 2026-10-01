@@ -1,0 +1,262 @@
+---
+/**
+ * “From idea to launch” — OWT’s process as a measured line.
+ * As the visitor reaches the block, the line draws in the direction of the
+ * process (left → right on desktop, top → bottom on tablet/phone) and each
+ * station activates when the line reaches it. Without JS or with reduced
+ * motion every step is shown in its final, fully active state.
+ */
+import SectionLabel from '../ui/SectionLabel.astro';
+import { getDict, type Locale } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+  /** section index shown in the label */
+  n?: string;
+}
+const { locale, n = '05' } = Astro.props;
+const t = getDict(locale).process;
+---
+
+<section class="process theme-paper" id="process" aria-labelledby="process-title">
+  <header class="container grid-12 process__head">
+    <SectionLabel n={n} text={t.label} class="process__label" />
+    <h2 class="process__title" id="process-title" data-lines>
+      <span class="line"><span>{t.title}</span></span>
+    </h2>
+    <p class="lead process__lead" data-reveal style="--d:2">{t.lead}</p>
+  </header>
+
+  <div class="container">
+    <div class="steps" data-process>
+      <div class="steps__track" aria-hidden="true">
+        <span class="steps__fill"></span>
+      </div>
+      <ol class="steps__list">
+        {
+          t.steps.map((s, i) => (
+            <li class="step" data-step>
+              <span class="step__dot" data-step-dot aria-hidden="true">
+                <span class="step__core" />
+              </span>
+              <span class="step__n mono">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="step__title">{s.title}</h3>
+              <p class="step__text">{s.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>
+
+<style>
+  .process {
+    padding-block: var(--section-pad);
+  }
+  .process__head {
+    row-gap: 28px;
+    padding-bottom: clamp(64px, 9vw, 140px);
+  }
+  .process :global(.process__label) {
+    grid-column: 1 / -1;
+  }
+  .process__title {
+    grid-column: 1 / span 9;
+    font-size: var(--fs-display);
+    font-weight: 500;
+    line-height: var(--lh-tight);
+    letter-spacing: -0.045em;
+  }
+  .process__lead {
+    grid-column: 10 / -1;
+    align-self: end;
+  }
+
+  /* ---------- Track ---------- */
+  .steps {
+    --pp: 1; /* progress 0–1, driven by JS; 1 = final state without JS */
+    --dot: 15px;
+    position: relative;
+  }
+  .steps__track {
+    position: absolute;
+    background: var(--rule-on-paper);
+  }
+  .steps__fill {
+    position: absolute;
+    inset: 0;
+    background: var(--ink);
+  }
+
+  /* ---------- Station ---------- */
+  .step {
+    position: relative;
+    display: grid;
+    align-content: start;
+    gap: 14px;
+  }
+  .step__dot {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: var(--dot);
+    height: var(--dot);
+    border-radius: var(--radius-o);
+    background: var(--paper);
+    border: 1px solid var(--ink);
+    transition: border-color 900ms var(--ease-out);
+  }
+  .step__core {
+    width: 7px;
+    height: 7px;
+    border-radius: var(--radius-o);
+    background: var(--ink);
+    transition: transform 900ms var(--ease-out);
+  }
+  /* one quiet ring when a station is reached — ink, thin, fades out */
+  .step__dot::after {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    border: 1px solid var(--ink);
+    opacity: 0;
+  }
+  .step__n {
+    color: var(--on-paper);
+    transition: color 900ms var(--ease-out);
+  }
+  .step__title {
+    font-size: var(--fs-h4);
+    font-weight: 500;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    transition:
+      opacity 1100ms var(--ease-out),
+      transform 1100ms var(--ease-out);
+  }
+  .step__text {
+    max-width: 30ch;
+    color: var(--on-paper-muted);
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    transition: opacity 1100ms var(--ease-out);
+  }
+
+  /* Inactive state exists only when JS drives the line */
+  :global(.js) .step:not(.is-active) .step__dot {
+    border-color: rgb(16 19 22 / 0.28);
+  }
+  :global(.js) .step:not(.is-active) .step__core {
+    transform: scale(0);
+  }
+  :global(.js) .step:not(.is-active) .step__n {
+    color: rgb(16 19 22 / 0.35);
+  }
+  :global(.js) .step:not(.is-active) .step__title {
+    opacity: 0.32;
+    transform: translate3d(0, 6px, 0);
+  }
+  :global(.js) .step:not(.is-active) .step__text {
+    opacity: 0.32;
+  }
+  :global(.js) .step.is-active .step__dot::after {
+    animation: station 1400ms var(--ease-out) 1;
+  }
+  @keyframes station {
+    from {
+      opacity: 0.35;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(2.6);
+    }
+  }
+
+  /* ---------- Desktop: horizontal process ---------- */
+  @media (min-width: 1024px) {
+    .steps {
+      padding-top: 52px;
+    }
+    .steps__track {
+      top: calc(var(--dot) / 2);
+      left: var(--track-start, calc(var(--dot) / 2));
+      right: var(--track-end, 0px);
+      height: 1px;
+    }
+    .steps__fill {
+      transform-origin: left center;
+      transform: scaleX(var(--pp));
+    }
+    .steps__list {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: var(--col-gap);
+    }
+    .step {
+      padding-right: 12px;
+    }
+    .step__dot {
+      top: -52px;
+      left: 0;
+    }
+  }
+
+  /* ---------- Tablet & phone: vertical process ---------- */
+  @media (max-width: 1023px) {
+    .process__title {
+      grid-column: 1 / -1;
+    }
+    .process__lead {
+      grid-column: 1 / span 9;
+    }
+    .steps {
+      padding-left: 44px;
+    }
+    .steps__track {
+      left: calc(var(--dot) / 2);
+      top: var(--track-start, calc(var(--dot) / 2));
+      bottom: var(--track-end, 0px);
+      width: 1px;
+    }
+    .steps__fill {
+      transform-origin: center top;
+      transform: scaleY(var(--pp));
+    }
+    .steps__list {
+      display: grid;
+      gap: 0;
+      max-width: 560px;
+    }
+    .step {
+      padding-bottom: clamp(40px, 7vw, 56px);
+    }
+    .step:last-child {
+      padding-bottom: 0;
+    }
+    .step__dot {
+      top: 0;
+      left: -44px;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .process__lead {
+      grid-column: 1 / -1;
+    }
+    .steps {
+      padding-left: 36px;
+    }
+    .step__dot {
+      left: -36px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .step__dot::after {
+      display: none;
+    }
+  }
+</style>

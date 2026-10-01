@@ -1,0 +1,55 @@
+---
+import '../styles/fonts.css';
+import '../styles/tokens.css';
+import '../styles/global.css';
+import { getDict, homePath, type Locale } from '../i18n';
+
+interface Props {
+  locale: Locale;
+  title?: string;
+  description?: string;
+}
+const { locale, title, description } = Astro.props;
+const t = getDict(locale);
+const pageTitle = title ?? t.meta.title;
+const pageDescription = description ?? t.meta.description;
+const path = Astro.url.pathname;
+const canonical = new URL(path, Astro.site);
+const isHome = path === homePath(locale);
+---
+
+<!doctype html>
+<html lang={t.meta.lang} id="top">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={pageDescription} />
+    {!path.startsWith('/404') && <link rel="canonical" href={canonical} />}
+    {
+      isHome && (
+        <>
+          <link rel="alternate" hreflang="uk" href={new URL('/', Astro.site)} />
+          <link rel="alternate" hreflang="en" href={new URL('/en/', Astro.site)} />
+          <link rel="alternate" hreflang="x-default" href={new URL('/', Astro.site)} />
+        </>
+      )
+    }
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="preload" href="/fonts/onest-cyrillic-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/onest-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin />
+    <slot name="head" />
+    <meta name="theme-color" content="#101316" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={pageDescription} />
+    <meta property="og:locale" content={locale === 'uk' ? 'uk_UA' : 'en_US'} />
+    <script is:inline>
+      document.documentElement.classList.add('js', 'header-visible');
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">{t.ui.skip}</a>
+    <slot />
+  </body>
+</html>

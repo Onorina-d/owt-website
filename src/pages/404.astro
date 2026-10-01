@@ -1,0 +1,54 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import Button from '../components/ui/Button.astro';
+import { routes } from '../data/routes';
+
+const links = [
+  { href: routes.services, label: 'Послуги' },
+  { href: routes.projects, label: 'Проєкти' },
+  { href: routes.fleet, label: 'Техніка' },
+  { href: routes.contacts, label: 'Контакти' },
+];
+---
+
+<PageLayout title="Сторінку не знайдено — OWT" description="Сторінку не знайдено.">
+  <section class="nf theme-paper">
+    <div class="container nf__inner">
+      <p class="mono muted">Помилка 404</p>
+      <h1 class="nf__title">Сторінку не знайдено</h1>
+      <p class="lead">Можливо, адреса змінилася після оновлення сайту. Перейдіть на головну або до потрібного розділу.</p>
+      <Button href={routes.home}>На головну</Button>
+      <ul class="nf__links">{links.map((l) => <li><a href={l.href}>{l.label}</a></li>)}</ul>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .nf {
+    min-height: 80vh;
+    display: flex;
+    align-items: center;
+    padding-block: calc(var(--header-h) + 64px) 96px;
+  }
+  .nf__inner {
+    display: grid;
+    gap: 24px;
+    justify-items: start;
+  }
+  .nf__title {
+    font-size: var(--fs-display);
+    font-weight: 500;
+    line-height: var(--lh-tight);
+    letter-spacing: -0.045em;
+  }
+  .nf__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 28px;
+    margin-top: 16px;
+  }
+  .nf__links a {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+</style>

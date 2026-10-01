@@ -1,0 +1,465 @@
+---
+/**
+ * Consultation request form — interface only (no delivery yet).
+ * UX rules: every control is a visible box; labels sit above and never
+ * disappear; default / hover / focus / filled / valid / error states all
+ * differ; ≥56px touch targets; one unmistakable submit action.
+ * Topic is pre-selected when arriving from a contextual CTA (data-topic-link).
+ */
+import Button from '../ui/Button.astro';
+import { getDict, type Locale } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getDict(locale).contact.form;
+---
+
+<form class="form" data-form method="post" action="#request" novalidate aria-labelledby="form-title">
+  <div class="form__fields" data-form-fields>
+    <header class="form__head">
+      <h3 class="form__title" id="form-title">{t.title}</h3>
+      <p class="form__req">{t.requiredNote}</p>
+    </header>
+
+    <fieldset class="group" data-field="topic" aria-describedby="f-topic-err">
+      <legend class="label">
+        {t.topicLabel}
+        <span class="req" aria-hidden="true">*</span>
+        <span class="visually-hidden">({t.required})</span>
+      </legend>
+      <div class="chips">
+        {
+          t.topics.map((topic) => (
+            <label class="chip">
+              <input type="radio" name="topic" value={topic.id} />
+              <span class="chip__box">
+                <svg class="chip__check" viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
+                  <path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="currentColor" stroke-width="1.8" />
+                </svg>
+                {topic.label}
+              </span>
+            </label>
+          ))
+        }
+      </div>
+      <p class="err" id="f-topic-err" data-error="topic" hidden>{t.errorTopic}</p>
+    </fieldset>
+
+    <div class="form__row">
+      <div class="field" data-field="phone">
+        <label class="label" for="f-phone">
+          {t.phone}
+          <span class="req" aria-hidden="true">*</span>
+          <span class="visually-hidden">({t.required})</span>
+        </label>
+        <div class="control">
+          <svg class="control__icon" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+            <path
+              d="M6.6 3.5h3l1.5 4.2-2 1.3a11 11 0 0 0 5.9 5.9l1.3-2 4.2 1.5v3a1.6 1.6 0 0 1-1.7 1.6A16.5 16.5 0 0 1 5 5.2a1.6 1.6 0 0 1 1.6-1.7Z"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linejoin="round"></path>
+          </svg>
+          <input
+            id="f-phone"
+            class="control__input"
+            type="tel"
+            name="phone"
+            autocomplete="tel"
+            inputmode="tel"
+            placeholder={t.phonePlaceholder}
+            required
+            aria-describedby="f-phone-hint f-phone-err"
+          />
+          <svg class="control__ok" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+            <path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="currentColor" stroke-width="1.8"></path>
+          </svg>
+        </div>
+        <p class="hint" id="f-phone-hint">{t.phoneHint}</p>
+        <p class="err" id="f-phone-err" data-error="phone" hidden>{t.errorPhone}</p>
+      </div>
+
+      <div class="field">
+        <label class="label" for="f-name">
+          {t.name} <span class="opt">({t.optional})</span>
+        </label>
+        <div class="control">
+          <input
+            id="f-name"
+            class="control__input"
+            type="text"
+            name="name"
+            autocomplete="name"
+            placeholder={t.namePlaceholder}
+          />
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label class="label" for="f-msg">
+        {t.message} <span class="opt">({t.optional})</span>
+      </label>
+      <div class="control control--area">
+        <textarea id="f-msg" class="control__input" name="message" rows="4" placeholder={t.messagePlaceholder}
+        ></textarea>
+      </div>
+    </div>
+
+    <div class="form__submit">
+      <Button type="submit" tone="light" class="form__btn" data-submit>{t.submit}</Button>
+      <p class="form__consent">{t.consent}</p>
+    </div>
+  </div>
+
+  <div class="form__success" data-form-success hidden tabindex="-1">
+    <span class="form__check" aria-hidden="true"></span>
+    <p class="form__success-title">{t.successTitle}</p>
+    <p class="muted">{t.successText}</p>
+    <button class="form__again" type="button" data-form-reset>{t.again}</button>
+  </div>
+  <p class="visually-hidden" aria-live="polite" data-form-status></p>
+</form>
+
+<style>
+  .form {
+    --line: rgb(241 239 234 / 0.3);
+    --line-hover: rgb(241 239 234 / 0.55);
+    --fill: rgb(241 239 234 / 0.05);
+    --fill-hover: rgb(241 239 234 / 0.08);
+    --fill-focus: rgb(241 239 234 / 0.1);
+    --error: #f0a08b;
+    --error-fill: rgb(240 160 139 / 0.09);
+    position: relative;
+    padding: clamp(24px, 3.2vw, 48px);
+    background: var(--ink-2);
+    border: 1px solid var(--rule-on-ink);
+    border-radius: var(--radius-panel);
+  }
+  .form__fields {
+    display: grid;
+    gap: 32px;
+  }
+  .form__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--rule-on-ink);
+  }
+  .form__title {
+    font-size: clamp(1.5rem, 2vw, 1.875rem);
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+  }
+  .form__req {
+    font-size: 0.875rem;
+    color: var(--on-ink-muted);
+  }
+
+  /* ---------- Labels, hints, errors ---------- */
+  .label {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 12px;
+    padding: 0;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--on-ink);
+  }
+  .req {
+    color: var(--on-ink);
+    font-weight: 600;
+  }
+  .opt {
+    font-weight: 400;
+    color: var(--on-ink-muted);
+  }
+  .hint {
+    margin-top: 8px;
+    font-size: 0.875rem;
+    color: var(--on-ink-muted);
+  }
+  .err {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--error);
+  }
+  .err::before {
+    content: '!';
+    display: grid;
+    place-items: center;
+    width: 18px;
+    height: 18px;
+    flex: none;
+    border-radius: var(--radius-o);
+    background: var(--error);
+    color: var(--ink);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  /* ---------- Text controls ---------- */
+  .control {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 60px;
+    background: var(--fill);
+    border: 1px solid var(--line);
+    border-radius: var(--radius-field);
+    overflow: hidden; /* keeps the textarea and its resize corner inside the radius */
+    transition:
+      border-color var(--dur-1) ease,
+      background-color var(--dur-1) ease,
+      box-shadow var(--dur-1) ease;
+  }
+  .control:hover {
+    border-color: var(--line-hover);
+    background: var(--fill-hover);
+  }
+  .control:focus-within {
+    border-color: var(--paper);
+    background: var(--fill-focus);
+    box-shadow: 0 0 0 3px rgb(241 239 234 / 0.16);
+  }
+  /* filled */
+  .control:has(.control__input:not(:placeholder-shown)) {
+    border-color: rgb(241 239 234 / 0.6);
+  }
+  .control__icon {
+    flex: none;
+    margin-left: 18px;
+    color: var(--on-ink-muted);
+  }
+  .control__input {
+    flex: 1;
+    min-width: 0;
+    height: 58px;
+    padding: 0 18px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--on-ink);
+    font-size: 1.125rem; /* ≥16px: no zoom on iOS */
+    font-weight: 450;
+    letter-spacing: -0.005em;
+    outline: none;
+  }
+  .control__icon + .control__input {
+    padding-left: 12px;
+  }
+  .control__input::placeholder {
+    color: rgb(241 239 234 / 0.38);
+    opacity: 1;
+  }
+  .control--area {
+    align-items: stretch;
+  }
+  .control--area .control__input {
+    height: auto;
+    min-height: 140px;
+    padding: 16px 18px;
+    line-height: 1.5;
+    resize: vertical;
+  }
+  .control__ok {
+    flex: none;
+    margin-right: 18px;
+    color: var(--paper);
+    opacity: 0;
+    transform: scale(0.6);
+    transition:
+      opacity var(--dur-1) ease,
+      transform var(--dur-1) ease;
+  }
+  .field.is-valid .control__ok {
+    opacity: 1;
+    transform: none;
+  }
+  /* error */
+  .field.is-invalid .control,
+  .field.is-invalid .control:hover,
+  .field.is-invalid .control:focus-within {
+    border-color: var(--error);
+    background: var(--error-fill);
+  }
+  .field.is-invalid .control:focus-within {
+    box-shadow: 0 0 0 3px rgb(240 160 139 / 0.2);
+  }
+  .field.is-invalid .control__icon {
+    color: var(--error);
+  }
+
+  /* ---------- Topic chips (radio) ---------- */
+  .group {
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .chip {
+    position: relative;
+    cursor: pointer;
+  }
+  .chip input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+  .chip__box {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 48px;
+    padding: 0 20px;
+    border-radius: var(--radius-o);
+    border: 1px solid var(--line);
+    background: var(--fill);
+    font-size: 0.9375rem;
+    font-weight: 450;
+    transition:
+      background-color var(--dur-1) ease,
+      color var(--dur-1) ease,
+      border-color var(--dur-1) ease,
+      padding var(--dur-1) ease;
+  }
+  .chip__check {
+    display: none;
+  }
+  .chip:hover .chip__box {
+    border-color: var(--line-hover);
+    background: var(--fill-hover);
+  }
+  .chip input:checked + .chip__box {
+    padding-left: 16px;
+    background: var(--paper);
+    border-color: var(--paper);
+    color: var(--ink);
+  }
+  .chip input:checked + .chip__box .chip__check {
+    display: block;
+  }
+  .chip input:focus-visible + .chip__box {
+    outline: 2px solid var(--paper);
+    outline-offset: 3px;
+  }
+  .group.is-invalid .chip__box {
+    border-color: var(--error);
+  }
+
+  /* ---------- Layout ---------- */
+  .form__row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px 20px;
+    align-items: start;
+  }
+
+  /* ---------- Submit ---------- */
+  .form__submit {
+    display: grid;
+    gap: 16px;
+    padding-top: 8px;
+  }
+  .form :global(.form__btn) {
+    width: 100%;
+    min-height: 64px;
+    justify-content: space-between;
+    padding-left: 28px;
+    font-size: 1.0625rem;
+  }
+  .form__consent {
+    color: var(--on-ink-muted);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+  .form.is-sending [data-submit] {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  /* ---------- Success ---------- */
+  .form__success {
+    display: grid;
+    gap: 14px;
+    justify-items: start;
+    padding: 24px 0;
+    outline: none;
+  }
+  .form__check {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-o);
+    border: 1px solid var(--paper);
+  }
+  .form__check::after {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 15px;
+    width: 16px;
+    height: 9px;
+    border-left: 1.5px solid var(--paper);
+    border-bottom: 1.5px solid var(--paper);
+    transform: rotate(-45deg);
+  }
+  .form__success-title {
+    font-size: var(--fs-h3);
+    font-weight: 500;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+  }
+  .form__again {
+    margin-top: 12px;
+    min-height: 44px;
+    color: var(--on-ink-muted);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  @media (max-width: 1180px) {
+    .form__row {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 767px) {
+    .form {
+      padding: 24px 20px 28px;
+      border-radius: 20px;
+    }
+    .form__fields {
+      gap: 28px;
+    }
+    .form__head {
+      padding-bottom: 20px;
+    }
+    .chip__box {
+      min-height: 48px;
+      padding: 0 16px;
+      font-size: 0.9375rem;
+    }
+    .control {
+      min-height: 58px;
+    }
+  }
+</style>

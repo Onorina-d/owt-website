@@ -1,0 +1,141 @@
+---
+/**
+ * Project frame — the same 4:3 frame, dimension line and caption used on the
+ * homepage, so a project looks identical wherever it appears.
+ */
+import Img from '../ui/Img.astro';
+import Icon from '../ui/Icon.astro';
+import { routes } from '../../data/routes';
+import type { Project } from '../../data/projects';
+
+interface Props {
+  project: Project;
+  index: number;
+  sizes?: string;
+  headingLevel?: 'h2' | 'h3';
+}
+const { project: p, index, sizes = '(min-width: 1024px) 46vw, 100vw', headingLevel = 'h3' } = Astro.props;
+const H = headingLevel;
+---
+
+<article class="pcard" data-directions={p.directions.join(' ')}>
+  <p class="pcard__index mono">
+    <span aria-hidden="true">P—{String(index).padStart(2, '0')}</span>
+    <span class="pcard__dim" aria-hidden="true"></span>
+    <span class="pcard__cat">{p.category}</span>
+  </p>
+  <div class="pcard__media media-frame">
+    <Img src={p.cover} alt={p.title} widths={[640, 960, 1280, 1600]} sizes={sizes} />
+    {
+      p.video && (
+        <button class="pcard__play" type="button" data-video-open={p.video} aria-label={`Дивитися відео: ${p.title}`}>
+          <span class="pcard__play-dot">
+            <Icon name="play" size={16} />
+          </span>
+          <span class="mono">Відео</span>
+        </button>
+      )
+    }
+  </div>
+  <H class="pcard__title">
+    <a href={routes.project(p.slug)}>{p.title}</a>
+  </H>
+</article>
+
+<style>
+  .pcard {
+    position: relative;
+    display: grid;
+    gap: 18px;
+  }
+  .pcard__index {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--muted);
+  }
+  .pcard__index > span:first-child {
+    flex: none;
+    color: inherit;
+  }
+  .pcard__cat {
+    text-align: right;
+  }
+  .pcard__dim {
+    position: relative;
+    flex: 1;
+    min-width: 24px;
+    height: 1px;
+    background: var(--rule);
+  }
+  .pcard__dim::before,
+  .pcard__dim::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    width: 1px;
+    height: 7px;
+    background: currentColor;
+  }
+  .pcard__dim::before {
+    left: 0;
+  }
+  .pcard__dim::after {
+    right: 0;
+  }
+  .pcard__media {
+    aspect-ratio: 4 / 3;
+  }
+  .pcard__media :global(img) {
+    transform: scale(1.02);
+    transition: transform 1400ms var(--ease-out);
+  }
+  .pcard__title {
+    font-size: clamp(1.25rem, 1.6vw, 1.625rem);
+    font-weight: 500;
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+  .pcard__title a {
+    padding-bottom: 3px;
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0% 1px no-repeat;
+    transition: background-size 900ms var(--ease-out);
+  }
+  .pcard__title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .pcard__play {
+    position: absolute;
+    left: 18px;
+    bottom: 18px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 18px 6px 6px;
+    border-radius: var(--radius-o);
+    background: rgb(16 19 22 / 0.6);
+    color: var(--paper);
+  }
+  .pcard__play-dot {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border-radius: var(--radius-o);
+    background: var(--paper);
+    color: var(--ink);
+  }
+  @media (hover: hover) {
+    .pcard:hover .pcard__media :global(img) {
+      transform: scale(1.07);
+    }
+    .pcard:hover .pcard__title a {
+      background-size: 100% 1px;
+    }
+  }
+</style>

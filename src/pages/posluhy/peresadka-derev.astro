@@ -1,0 +1,374 @@
+---
+/**
+ * Large-tree transplanting. Facts from the old tree-transplant page:
+ * girth ≤ 90 cm, height ≤ 20 m, dig diameter 2.3 m, depth 1.6 m,
+ * three mechanised steps, “our difference”, pricing and terms.
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import PageHead from '../../components/page/PageHead.astro';
+import SectionHead from '../../components/page/SectionHead.astro';
+import Figures from '../../components/page/Figures.astro';
+import VideoPoster from '../../components/page/VideoPoster.astro';
+import RelatedProjects from '../../components/page/RelatedProjects.astro';
+import OtherDirections from '../../components/page/OtherDirections.astro';
+import CtaBand from '../../components/page/CtaBand.astro';
+import Button from '../../components/ui/Button.astro';
+import Img from '../../components/ui/Img.astro';
+import { media } from '../../data/media';
+import { routes } from '../../data/routes';
+import { projects, projectsFor } from '../../data/projects';
+import { videos } from '../../data/site';
+
+const treeProject = projects.find((p) => p.slug === 'peresadka-derev')!;
+const g = treeProject.gallery;
+const pick = (name: string) => g.find((img) => img.src.includes(name)) ?? g[0];
+const steps = [
+  { title: 'Підготовка ями для посадки', image: pick('dsc_0984'), alt: 'Установка для пересадки дерев з розкритими лопатями' },
+  { title: 'Викопка дерева', image: pick('dsc_0962'), alt: 'Машина піднімає сосну разом з кореневою кулею' },
+  { title: 'Транспортування та висадка', image: pick('dsc_0971'), alt: 'Висаджене дерево поруч з машиною OWT' },
+];
+const difference = [
+  { t: 'Задоволеність клієнтів', d: 'Ваше задоволення — наш пріоритет, ми докладемо більше зусиль, щоб його забезпечити.' },
+  { t: 'Ретельний досвід', d: 'Ми робимо це роками і жодного разу не втратили жодного дерева під час пересадки.' },
+  { t: 'Спеціальне обладнання', d: 'Інвестуємо в новітнє обладнання та технології для безпечного й ефективного переміщення дерев.' },
+  { t: 'Увага до деталей', d: 'Пишаємося здатністю висаджувати дерева прямо та рівномірно.' },
+];
+const terms = [
+  'Ціна формується індивідуально — залежно від обсягу та потреб клієнта',
+  'Можливі різні форми розрахунку та доставка',
+  'Якісна посадка у будь-яку пору року',
+  'Успішні контракти з відомими європейськими компаніями',
+];
+---
+
+<PageLayout
+  headerTone="over"
+  title="Пересадка великих дерев — OWT · Ost West Technology"
+  description="Посадка та пересадка крупномірних дерев з обхватом стовбура до 90 см і висотою до 20 м. Діаметр викопки 2,3 м, глибина 1,6 м. Повна механізація, будь-яка пора року."
+>
+  <PageHead
+    theme="ink"
+    layout="stacked"
+    crumbs={[{ href: routes.home, label: 'Головна' }, { href: routes.services, label: 'Послуги' }, { label: 'Пересадка великих дерев' }]}
+    label="Напрям 03"
+    title="Пересадка великих дерев"
+    lead="Надаємо послуги з посадки та пересадки крупномірних дерев. Пересадимо ваше дерево або привеземо та посадимо нове."
+    image={media.treeHead}
+    imageAlt="Машина для пересадки дерев OWT серед сосен"
+    caption="Пересадка крупномірних дерев — проєкт OWT"
+  >
+    <div slot="actions" class="head-actions" data-reveal style="--d:4">
+      <Button href={routes.request('trees')} tone="light">Розрахувати пересадку</Button>
+    </div>
+  </PageHead>
+
+  <!-- 01 — Capability: dimensioned drawing + figures -->
+  <section class="sec theme-paper">
+    <div class="container">
+      <SectionHead
+        n="01"
+        label="Можливості"
+        title="Повна механізація процесу"
+        lead="Спеціалізована техніка для посадки та пересадки дерев: автомобіль з установкою виконує весь цикл — від ями до висадки."
+      />
+      <div class="cap grid-12">
+        <figure class="drawing" data-reveal aria-labelledby="drawing-cap">
+          <svg viewBox="0 0 520 580" role="img" aria-label="Схема: дерево висотою до 20 м, обхват стовбура до 90 см, кореневий ком діаметром 2,3 м і глибиною 1,6 м">
+            <defs>
+              <pattern id="hatch" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(-33.7)">
+                <line x1="0" y1="0" x2="0" y2="9" stroke="currentColor" stroke-width="1" opacity="0.35"></line>
+              </pattern>
+            </defs>
+            <!-- ground -->
+            <line class="d d-thin" pathLength="1" x1="30" y1="330" x2="490" y2="330"></line>
+            <!-- root ball -->
+            <path class="d hatch" d="M150 330 L200 468 Q260 500 320 468 L370 330 Z" fill="url(#hatch)"></path>
+            <path class="d" pathLength="1" d="M150 330 L200 468 Q260 500 320 468 L370 330"></path>
+            <!-- trunk & crown -->
+            <path class="d" pathLength="1" d="M253 330 L255 120 M267 330 L265 120"></path>
+            <ellipse class="d d-dash" pathLength="1" cx="260" cy="118" rx="112" ry="92"></ellipse>
+            <!-- height dimension (not to scale) -->
+            <path class="d d-thin" pathLength="1" d="M430 330 L430 210 L422 200 L438 188 L430 178 L430 26 M420 26 L440 26 M420 330 L440 330"></path>
+            <text x="446" y="160" class="t">ДО</text>
+            <text x="446" y="182" class="t t-big">20 м</text>
+            <!-- girth -->
+            <path class="d d-thin" pathLength="1" d="M253 296 L267 296 M267 296 L330 252 L392 252"></path>
+            <text x="334" y="244" class="t">ОБХВАТ ДО 90 СМ</text>
+            <!-- diameter -->
+            <path class="d d-thin" pathLength="1" d="M150 336 L150 548 M370 336 L370 548 M150 536 L370 536"></path>
+            <text x="216" y="562" class="t t-big">Ø 2,3 м</text>
+            <!-- depth -->
+            <path class="d d-thin" pathLength="1" d="M144 330 L96 330 M196 488 L96 488 M108 330 L108 488"></path>
+            <text x="30" y="414" class="t t-big">1,6 м</text>
+            <text x="30" y="436" class="t">ГЛИБИНА</text>
+          </svg>
+          <figcaption id="drawing-cap" class="mono muted">Схема без масштабу</figcaption>
+        </figure>
+        <div class="cap__figs">
+          <Figures
+            cols={2}
+            items={[
+              { value: '90', unit: 'см', label: 'обхват стовбура' },
+              { value: '20', unit: 'м', label: 'висота дерева' },
+              { value: '2,3', unit: 'м', label: 'діаметр викопки' },
+              { value: '1,6', unit: 'м', label: 'глибина викопки' },
+            ]}
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 02 — Process -->
+  <section class="sec theme-stone">
+    <div class="container">
+      <SectionHead n="02" label="Процес" title="Три етапи — одна машина" />
+      <ol class="steps3">
+        {
+          steps.map((s, i) => (
+            <li class="step3" data-reveal style={`--d:${i}`}>
+              <div class="step3__img media-frame">
+                <Img src={s.image} alt={s.alt} widths={[640, 960, 1280]} sizes="(min-width: 1024px) 30vw, 100vw" />
+              </div>
+              <p class="step3__n mono">{String(i + 1).padStart(2, '0')} / 03</p>
+              <h3 class="step3__title">{s.title}</h3>
+            </li>
+          ))
+        }
+      </ol>
+      <p class="steps3__note muted" data-reveal>
+        Для пересадки, видалення або посадки дерев використовуємо спеціалізоване важке обладнання: великі та малі лопати, крани, міні-екскаватори, навантажувачі та міні-навантажувачі. Спочатку готуємо місце, а потім особливо дбаємо про збереження кореневої кулі та кореневої системи. За потреби безпечно транспортуємо дерева на нове місце.
+      </p>
+    </div>
+  </section>
+
+  <!-- 03 — Our difference -->
+  <section class="sec theme-paper">
+    <div class="container">
+      <SectionHead n="03" label="Наша різниця" title="Чому дерева приживаються" />
+      <ol class="diff">
+        {
+          difference.map((d, i) => (
+            <li class="diff__item" data-reveal style={`--d:${i}`}>
+              <span class="mono muted">{String(i + 1).padStart(2, '0')}</span>
+              <h3 class="diff__title">{d.t}</h3>
+              <p class="muted">{d.d}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </section>
+
+  <!-- 04 — Video & terms -->
+  <section class="sec theme-ink">
+    <div class="container vt">
+      <div class="vt__video" data-reveal>
+        <VideoPoster video={videos.trees} poster={pick('dsc_0966')} title="Пересадка крупномірних дерев" />
+      </div>
+      <div class="vt__terms" data-reveal style="--d:1">
+        <p class="mono muted">Умови</p>
+        <ul class="vt__list">{terms.map((t) => <li>{t}</li>)}</ul>
+      </div>
+    </div>
+  </section>
+
+  <RelatedProjects n="05" items={projectsFor('trees')} theme="paper" title="Проєкт з пересадки дерев" />
+  <OtherDirections n="06" current="trees" />
+  <CtaBand
+    topic="trees"
+    title="Яке дерево потрібно пересадити?"
+    text="Розкажіть про дерево та місце — ціну розрахуємо індивідуально залежно від обсягу робіт."
+    cta="Розрахувати пересадку"
+  />
+</PageLayout>
+
+<style>
+  .head-actions {
+    margin-top: 12px;
+  }
+  .sec {
+    padding-block: var(--section-pad);
+  }
+
+  /* drawing */
+  .cap {
+    row-gap: 48px;
+    align-items: center;
+  }
+  .drawing {
+    grid-column: 1 / span 6;
+    display: grid;
+    gap: 12px;
+    color: var(--ink);
+  }
+  .drawing svg {
+    width: 100%;
+    height: auto;
+    overflow: visible;
+  }
+  .d {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+    transition: stroke-dashoffset 2200ms var(--ease-in-out);
+  }
+  .d-thin {
+    stroke-width: 1;
+  }
+  .d-dash {
+    stroke-width: 1;
+  }
+  .hatch {
+    stroke: none;
+    fill: url(#hatch);
+    transition: opacity 1200ms var(--ease-out) 900ms;
+  }
+  .t {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    fill: var(--on-paper-muted);
+  }
+  .t-big {
+    font-family: var(--font-sans);
+    font-size: 22px;
+    letter-spacing: -0.02em;
+    font-weight: 500;
+    fill: var(--ink);
+  }
+  :global(.js) .drawing:not(.is-in) .d {
+    stroke-dashoffset: 1;
+  }
+  :global(.js) .drawing:not(.is-in) .hatch {
+    opacity: 0;
+  }
+  .cap__figs {
+    grid-column: 8 / -1;
+  }
+
+  /* process */
+  .steps3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: var(--col-gap);
+  }
+  .step3 {
+    display: grid;
+    gap: 14px;
+  }
+  .step3__img {
+    aspect-ratio: 4 / 5;
+    margin-bottom: 8px;
+  }
+  .step3__n {
+    color: var(--on-paper-muted);
+  }
+  .step3__title {
+    font-size: var(--fs-h4);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+  .steps3__note {
+    max-width: 72ch;
+    margin-top: clamp(40px, 5vw, 72px);
+    font-size: var(--fs-lead);
+    line-height: 1.55;
+  }
+
+  /* difference */
+  .diff {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-top: 1px solid var(--rule-on-paper);
+  }
+  .diff__item {
+    display: grid;
+    align-content: start;
+    gap: 14px;
+    padding: 28px clamp(14px, 2vw, 28px) 8px 0;
+  }
+  .diff__item + .diff__item {
+    padding-left: clamp(14px, 2vw, 28px);
+    border-left: 1px solid var(--rule-on-paper);
+  }
+  .diff__title {
+    font-size: var(--fs-h4);
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  /* video & terms */
+  .vt {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 48px clamp(32px, 5vw, 88px);
+    align-items: center;
+  }
+  .vt__terms {
+    display: grid;
+    gap: 16px;
+  }
+  .vt__list {
+    border-top: 1px solid var(--rule-on-ink);
+  }
+  .vt__list li {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--rule-on-ink);
+    font-size: 1.0625rem;
+    line-height: 1.45;
+  }
+
+  @media (max-width: 1023px) {
+    .drawing,
+    .cap__figs {
+      grid-column: 1 / -1;
+    }
+    .drawing {
+      max-width: 520px;
+    }
+    .steps3 {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+    .step3__img {
+      aspect-ratio: 4 / 3;
+    }
+    .diff {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .diff__item:nth-child(3) {
+      padding-left: 0;
+      border-left: 0;
+    }
+    .vt {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 767px) {
+    .diff {
+      grid-template-columns: 1fr;
+    }
+    .diff__item,
+    .diff__item + .diff__item {
+      padding: 22px 0;
+      border-left: 0;
+      border-bottom: 1px solid var(--rule-on-paper);
+    }
+    .head-actions :global(.btn) {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .drawing:not(.is-in) .d {
+      stroke-dashoffset: 0;
+    }
+  }
+</style>

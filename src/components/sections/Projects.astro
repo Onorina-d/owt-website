@@ -1,0 +1,398 @@
+---
+/**
+ * Completed projects — one photo series in identical 4:3 frames.
+ * Desktop (fine pointer): the section pins and the series travels
+ * horizontally; hovering a frame brings it forward and quietly dims the rest.
+ * Tablet / phone / reduced motion: a vertical sequence of full-size frames.
+ * Only titles and categories that exist on the current site are shown.
+ */
+import SectionLabel from '../ui/SectionLabel.astro';
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import Img from '../ui/Img.astro';
+import { media } from '../../data/media';
+import { routes } from '../../data/routes';
+import { getDict, type Locale } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getDict(locale).projects;
+const total = String(t.items.length).padStart(2, '0');
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<section class="projects theme-ink" id="projects" aria-labelledby="projects-title" data-hscroll>
+  <div class="projects__pin" data-hscroll-pin>
+    <header class="container projects__head">
+      <SectionLabel n="03" text={t.label} />
+      <div class="projects__headrow">
+        <h2 class="h2 projects__title" id="projects-title" data-lines>
+          <span class="line"><span>{t.title}</span></span>
+        </h2>
+        <div class="projects__aside" data-reveal style="--d:2">
+          <p class="projects__lead muted">{t.lead}</p>
+          {
+            locale === 'uk' && (
+              <a class="projects__all" href={routes.projects}>
+                {t.all}
+                <Icon name="arrow" size={16} />
+              </a>
+            )
+          }
+        </div>
+      </div>
+    </header>
+
+    <div class="projects__viewport" data-hscroll-viewport>
+      <ol class="projects__track" data-hscroll-track>
+        {
+          t.items.map((p, i) => (
+            <li class="proj" data-reveal style={`--d:${i % 2}`}>
+              <article class="proj__inner" data-linked={locale === 'uk' ? '' : undefined}>
+                <p class="proj__index mono">
+                  <span aria-hidden="true">P—{pad(i + 1)}</span>
+                  <span class="proj__dim" aria-hidden="true" />
+                  <span class="proj__cat muted">{p.category}</span>
+                </p>
+                <div class="proj__media media-frame">
+                  <Img
+                    src={media[p.image]}
+                    alt={p.title}
+                    widths={[640, 960, 1280, 1600]}
+                    sizes="(min-width: 1024px) 46vw, (min-width: 768px) 78vw, 100vw"
+                  />
+                  {p.video && (
+                    <button
+                      class="proj__play"
+                      type="button"
+                      data-video-open={p.video}
+                      aria-label={`${t.video}: ${p.title}`}
+                    >
+                      <span class="proj__play-dot">
+                        <Icon name="play" size={16} />
+                      </span>
+                      <span class="proj__play-label mono">{t.video}</span>
+                    </button>
+                  )}
+                </div>
+                <div class="proj__cap">
+                  <h3 class="proj__title">
+                    {locale === 'uk' ? (
+                      <a class="proj__link" href={routes.project(p.slug)}>
+                        {p.title}
+                      </a>
+                    ) : (
+                      p.title
+                    )}
+                  </h3>
+                </div>
+              </article>
+            </li>
+          ))
+        }
+        <li class="proj proj--end">
+          <div class="proj__end">
+            <p class="proj__end-title">{t.end.title}</p>
+            <p class="muted proj__end-text">{t.end.text}</p>
+            <Button href="#request" tone="light" data-topic-link>{t.end.cta}</Button>
+          </div>
+        </li>
+      </ol>
+    </div>
+
+    <div class="container projects__foot" aria-hidden="true">
+      <span class="mono muted">01</span>
+      <span class="projects__progress"><span data-hscroll-progress></span></span>
+      <span class="mono muted">{total}</span>
+    </div>
+  </div>
+</section>
+
+<style>
+  .projects {
+    position: relative;
+    padding-top: var(--section-pad);
+    padding-bottom: var(--section-pad);
+  }
+  .projects__pin {
+    display: flex;
+    flex-direction: column;
+  }
+  .projects__head {
+    display: grid;
+    gap: 28px;
+  }
+  .projects__headrow {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 32px 64px;
+    flex-wrap: wrap;
+  }
+  .projects__lead {
+    max-width: 30ch;
+    font-size: var(--fs-lead);
+  }
+  .projects__aside {
+    display: grid;
+    gap: 16px;
+    justify-items: start;
+  }
+  .projects__all {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 4px;
+    font-weight: 500;
+    background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
+  }
+  /* whole frame is clickable via the title link; the play button stays above it */
+  .proj__inner {
+    position: relative;
+  }
+  .proj__link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+  }
+  .proj__play {
+    z-index: 2;
+  }
+  .projects__viewport {
+    margin-top: clamp(48px, 7vw, 96px);
+  }
+
+  /* ---------- Frame (shared by every layout) ---------- */
+  .proj__inner {
+    display: grid;
+    gap: 18px;
+  }
+  .proj__index {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .proj__dim {
+    position: relative;
+    flex: 1;
+    height: 1px;
+    background: var(--rule-on-ink);
+  }
+  /* dimension-line ticks */
+  .proj__dim::before,
+  .proj__dim::after {
+    content: '';
+    position: absolute;
+    top: -3px;
+    width: 1px;
+    height: 7px;
+    background: var(--on-ink-muted);
+  }
+  .proj__dim::before {
+    left: 0;
+  }
+  .proj__dim::after {
+    right: 0;
+  }
+
+  .proj__media {
+    aspect-ratio: 4 / 3;
+  }
+  .proj__media :global(img) {
+    transform: scale(1.02);
+    transition:
+      transform 1400ms var(--ease-out),
+      opacity 700ms var(--ease-out),
+      filter 700ms var(--ease-out);
+  }
+
+  .proj__play {
+    position: absolute;
+    left: 20px;
+    bottom: 20px;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 6px 18px 6px 6px;
+    border-radius: var(--radius-o);
+    background: rgb(16 19 22 / 0.55);
+    color: var(--paper);
+    transition: background-color var(--dur-2) var(--ease-out);
+  }
+  .proj__play-dot {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: var(--radius-o);
+    background: var(--paper);
+    color: var(--ink);
+  }
+  .proj__play:hover {
+    background: rgb(16 19 22 / 0.8);
+  }
+
+  .proj__cap {
+    padding-top: 4px;
+    transition: opacity 700ms var(--ease-out);
+  }
+  .proj__title {
+    justify-self: start;
+    padding-bottom: 3px;
+    font-size: clamp(1.25rem, 1.6vw, 1.625rem);
+    font-weight: 500;
+    line-height: 1.18;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0% 1px no-repeat;
+    transition: background-size 900ms var(--ease-out);
+  }
+  .proj__index > span:first-child,
+  .proj__cat {
+    flex: none;
+    white-space: nowrap;
+  }
+  .proj__dim {
+    min-width: 24px;
+  }
+
+  /* Hover: the hovered frame comes forward, the rest of the series recedes. */
+  @media (hover: hover) {
+    .proj:hover .proj__media :global(img) {
+      transform: scale(1.07);
+    }
+    .proj:hover .proj__title {
+      background-size: 100% 1px;
+    }
+    .projects__track:has(.proj:not(.proj--end):hover) .proj:not(:hover) .proj__media :global(img) {
+      opacity: 0.38;
+      filter: grayscale(0.6);
+    }
+    .projects__track:has(.proj:not(.proj--end):hover) .proj:not(:hover) .proj__cap {
+      opacity: 0.45;
+    }
+  }
+
+  /* ---------- End panel ---------- */
+  .proj__end {
+    display: grid;
+    gap: 20px;
+    justify-items: start;
+  }
+  .proj__end-title {
+    font-size: var(--fs-h3);
+    font-weight: 500;
+    line-height: 1.02;
+    letter-spacing: -0.035em;
+  }
+  .proj__end-text {
+    max-width: 34ch;
+    margin-bottom: 12px;
+  }
+
+  .projects__foot {
+    display: none;
+  }
+  .projects__progress {
+    position: relative;
+    flex: 1;
+    height: 1px;
+    background: var(--rule-on-ink);
+  }
+  .projects__progress span {
+    position: absolute;
+    inset: 0;
+    background: var(--paper);
+    transform-origin: left;
+    transform: scaleX(var(--hp, 0));
+  }
+
+  /* ---------- Pinned horizontal series (JS adds .hscroll-on) ---------- */
+  :global(.hscroll-on) .projects {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  :global(.hscroll-on) .projects__pin {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+    justify-content: center;
+  }
+  :global(.hscroll-on) .projects__head {
+    padding-top: clamp(32px, 5vh, 72px);
+  }
+  :global(.hscroll-on) .projects__viewport {
+    margin-top: clamp(28px, 4.5vh, 56px);
+  }
+  :global(.hscroll-on) .projects__track {
+    --frame-h: min(46vh, 540px);
+    display: flex;
+    align-items: stretch;
+    gap: clamp(32px, 3.4vw, 64px);
+    padding-inline: var(--gutter);
+    will-change: transform;
+  }
+  :global(.hscroll-on) .proj {
+    flex: none;
+    width: calc(var(--frame-h) * 4 / 3);
+  }
+  :global(.hscroll-on) .proj--end {
+    width: min(400px, 32vw);
+    display: flex;
+    align-items: center;
+    padding-right: var(--gutter);
+  }
+  :global(.hscroll-on) .projects__foot {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding-top: clamp(20px, 3vh, 36px);
+    padding-bottom: clamp(20px, 3.5vh, 40px);
+  }
+
+  /* ---------- Vertical sequence (tablet / phone / no pin) ---------- */
+  :global(html:not(.hscroll-on)) .projects__track {
+    display: grid;
+    gap: clamp(64px, 10vw, 120px);
+    max-width: var(--max);
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+  @media (min-width: 768px) {
+    /* same frame size, alternating alignment for an editorial rhythm */
+    :global(html:not(.hscroll-on)) .proj {
+      width: 78%;
+    }
+    :global(html:not(.hscroll-on)) .proj:nth-child(even) {
+      justify-self: end;
+    }
+    :global(html:not(.hscroll-on)) .proj--end {
+      width: auto;
+      justify-self: start;
+    }
+  }
+
+  @media (max-width: 767px) {
+    .projects__headrow {
+      display: grid;
+      gap: 16px;
+    }
+    .projects__lead {
+      font-size: 1rem;
+    }
+    .proj__cat {
+      flex: 0 1 auto;
+      white-space: normal;
+      text-align: right;
+    }
+    .proj--end .proj__end {
+      padding-top: 32px;
+      border-top: 1px solid var(--rule-on-ink);
+    }
+  }
+</style>

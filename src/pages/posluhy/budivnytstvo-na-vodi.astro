@@ -1,0 +1,522 @@
+---
+/**
+ * Building on water — yacht clubs & marinas, pontoons / moorings / piers,
+ * floating houses. Facts from the old yacht-clubs, floating-houses and
+ * pontoons pages. The old floating-houses gallery shows visualisations, not
+ * built objects, so that part is typographic.
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import PageHead from '../../components/page/PageHead.astro';
+import SubNav from '../../components/page/SubNav.astro';
+import SectionHead from '../../components/page/SectionHead.astro';
+import Archive from '../../components/page/Archive.astro';
+import RelatedProjects from '../../components/page/RelatedProjects.astro';
+import OtherDirections from '../../components/page/OtherDirections.astro';
+import CtaBand from '../../components/page/CtaBand.astro';
+import Button from '../../components/ui/Button.astro';
+import Img from '../../components/ui/Img.astro';
+import Icon from '../../components/ui/Icon.astro';
+import { media } from '../../data/media';
+import { archive } from '../../data/archive';
+import { routes } from '../../data/routes';
+import { projectsFor } from '../../data/projects';
+
+const advantages = [
+  { value: '10+', label: 'років досвіду у водному будівництві' },
+  { value: 'Власне', label: 'виробництво понтонів' },
+  { value: 'Під ключ', label: 'реалізація об’єкта' },
+  { value: 'Гарантія', label: 'на всі конструкції' },
+];
+const solutions = [
+  'Бетонні або пластикові понтони',
+  'Стаціонарні та мобільні причали',
+  'Освітлення та електрифікація стоянок',
+  'Підключення водопостачання',
+  'Зони заправки та зливу',
+  'Відеоспостереження та охорона',
+  'Паркінг і зони для BBQ / лаунж',
+  'Кафе або міні-ресторан на території',
+];
+const audience = ['Власники моторних човнів та яхт', 'Власники гідроциклів, катамаранів', 'Оператори туристичних маршрутів', 'Готельні комплекси на воді', 'Відпочинкові бази та кемпінги'];
+const extra = ['Проєктування яхт-клубу з нуля', 'Встановлення модульних пірсів', 'Будівництво плавучих офісів / кас', 'Розробка ландшафтного дизайну території', 'Маркетинговий супровід та брендинг яхт-клубу'];
+const pontoonTypes = [
+  { n: '01', title: 'Понтони для катерів і човнів' },
+  { n: '02', title: 'Понтони для паркування гідроциклів' },
+  { n: '03', title: 'Причали, відмостки, альтанки на воді' },
+];
+const houseUses = ['Постійне житло або дача', 'Відпочинковий будиночок', 'Гостьовий будиночок на території бази відпочинку', 'Офіс на воді', 'Рибальська або рекреаційна база'];
+const houseServices = ['Індивідуальне проєктування', 'Виготовлення понтонної платформи', 'Будівництво та внутрішнє облаштування', 'Доставка і пришвартування', 'Повна інженерія: вода, каналізація, електрика, інтернет', 'Можливість автономного енергозабезпечення (сонячні панелі)'];
+const houseAdv = [
+  { t: 'Мобільність', d: 'переміщення по водоймі' },
+  { t: 'Екологічність', d: 'мінімальний вплив на природу' },
+  { t: 'Комфорт', d: 'утеплення, опалення, сучасні матеріали' },
+  { t: 'Безпека', d: 'сертифіковані понтони та антикорозійні матеріали' },
+  { t: 'Краса', d: 'панорамні вікна, тераси, дахові майданчики' },
+];
+---
+
+<PageLayout
+  title="Будівництво на воді — яхт-клуби, понтони, пірси, будинки на воді · OWT"
+  description="Яхт-клуби та марини, понтони, причали, пірси й елінги, будинки на воді від OWT. Понад 10 років досвіду у водному будівництві, власне виробництво понтонів, реалізація під ключ."
+>
+  <PageHead
+    layout="stacked"
+    crumbs={[{ href: routes.home, label: 'Головна' }, { href: routes.services, label: 'Послуги' }, { label: 'Будівництво на воді' }]}
+    label="Напрям 02"
+    title="Будівництво на воді"
+    lead="Яхт-клуби та марини, понтони, причали, пірси й елінги, будинки на воді — від проєктування до запуску."
+    image={media.poolPontoons}
+    imageAlt="Акваторія з понтонами та басейном на березі — аерозйомка проєкту OWT"
+    caption="Проєкт OWT — аерозйомка"
+  />
+
+  <section class="adv theme-paper" aria-label="Переваги">
+    <div class="container">
+      <dl class="adv__list">
+        {
+          advantages.map((a, i) => (
+            <div class="adv__item" data-reveal style={`--d:${i}`}>
+              <dt class="adv__value">{a.value}</dt>
+              <dd class="adv__label muted">{a.label}</dd>
+            </div>
+          ))
+        }
+      </dl>
+    </div>
+  </section>
+
+  <SubNav
+    items={[
+      { id: 'yakht-kluby', label: 'Яхт-клуби та марини' },
+      { id: 'pontony', label: 'Понтони, причали, пірси' },
+      { id: 'budynky', label: 'Будинки на воді' },
+    ]}
+  />
+
+  <!-- 01 — Yacht clubs -->
+  <section class="sec theme-paper" id="yakht-kluby">
+    <div class="container">
+      <SectionHead
+        n="01"
+        label="Яхт-клуби та марини"
+        title="Мрієте про комфортну стоянку для катера чи яхти?"
+        lead="Ми створюємо сучасну інфраструктуру яхт-клубів — зручні причали, послуги для суден, зони відпочинку та сервіс для вашого повного комфорту."
+      />
+      <div class="yc grid-12">
+        <figure class="yc__fig" data-reveal>
+          <div class="yc__img media-frame" data-wipe>
+            <Img src={media.aerialIsland} alt="Яхт-клуб: острів з басейном і понтонами — аерозйомка проєкту OWT" widths={[640, 960, 1280, 1600]} sizes="(min-width: 1024px) 42vw, 100vw" />
+          </div>
+          <figcaption class="mono muted">Наш яхт-клуб — це більше, ніж причал: місце зустрічей, дозвілля, збереження техніки та стильного життя на воді.</figcaption>
+        </figure>
+        <div class="yc__body">
+          <p class="mono muted yc__h">Наші рішення включають</p>
+          <ol class="yc__solutions">
+            {
+              solutions.map((s, i) => (
+                <li data-reveal style={`--d:${i % 4}`}>
+                  <span class="mono">{String(i + 1).padStart(2, '0')}</span>
+                  {s}
+                </li>
+              ))
+            }
+          </ol>
+          <div class="yc__cols">
+            <div data-reveal>
+              <p class="mono muted yc__h">Для кого</p>
+              <ul class="chips">{audience.map((a) => <li>{a}</li>)}</ul>
+            </div>
+            <div data-reveal style="--d:1">
+              <p class="mono muted yc__h">Додаткові послуги</p>
+              <ul class="ticks">{extra.map((e) => <li>{e}</li>)}</ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="consult theme-ink" data-reveal>
+        <div class="consult__text">
+          <p class="mono muted">Проєктування яхт-клубів та марин</p>
+          <h3 class="consult__title">Консультація інженера OWT</h3>
+          <p class="muted">Надійний об’єкт на воді починається з грамотної геодезії та правильного підбору матеріалів. Залиште заявку, і наш інженер проаналізує вашу задачу, підбере оптимальний тип понтонів (бетон, пластик, дерево) та зорієнтує щодо бюджету і строків будівництва під ключ.</p>
+        </div>
+        <Button href={routes.request('yacht')} tone="light">Отримати консультацію</Button>
+      </aside>
+    </div>
+  </section>
+
+  <!-- 02 — Pontoons, moorings, piers -->
+  <section class="sec theme-stone" id="pontony">
+    <div class="container">
+      <SectionHead n="02" label="Понтони, причали, пірси, елінги" title="Понтони та причали" lead="Власне виробництво понтонів. Матеріали — бетон, пластик, дерево." />
+      <div class="pt grid-12">
+        <ol class="pt__types">
+          {
+            pontoonTypes.map((p, i) => (
+              <li class="pt__type" data-reveal style={`--d:${i}`}>
+                <span class="mono">{p.n}</span>
+                <span class="pt__title">{p.title}</span>
+              </li>
+            ))
+          }
+        </ol>
+        <figure class="pt__fig" data-reveal>
+          <div class="pt__img media-frame">
+            <Img src={media.pontoonsConcrete} alt="Бетонні понтони на воді — аерозйомка проєкту OWT" widths={[640, 960, 1280, 1600]} sizes="(min-width: 1024px) 50vw, 100vw" />
+          </div>
+          <figcaption class="mono muted">Бетонні понтони — проєкт OWT</figcaption>
+        </figure>
+      </div>
+      <div class="pt__materials" data-reveal>
+        <ul class="chips chips--ink">{['Бетон', 'Пластик', 'Дерево'].map((m) => <li>{m}</li>)}</ul>
+        <a class="pt__rent" href={routes.fleet}>
+          Модульні пластикові понтони — також в оренду
+          <Icon name="arrow" size={16} />
+        </a>
+      </div>
+      <div class="pt__archive">
+        <Archive groups={[{ title: 'Понтони, причали, пірси', images: archive('water-pontoons') }]} />
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 — Floating houses -->
+  <section class="sec theme-ink" id="budynky">
+    <div class="container">
+      <SectionHead
+        n="03"
+        label="Будинки на воді"
+        title="Сучасне рішення для життя та відпочинку на природі"
+        lead="OWT реалізує проєкти будинків на воді — повноцінні житлові споруди на понтонах, які забезпечують комфорт, мобільність і неймовірні краєвиди прямо з вікна."
+      />
+      <div class="fh">
+        <div class="fh__col" data-reveal>
+          <p class="mono muted fh__h">Будинок на воді — це</p>
+          <ul class="ticks ticks--ink">{houseUses.map((u) => <li>{u}</li>)}</ul>
+        </div>
+        <div class="fh__col" data-reveal style="--d:1">
+          <p class="mono muted fh__h">Наші послуги</p>
+          <ol class="fh__services">
+            {
+              houseServices.map((s, i) => (
+                <li>
+                  <span class="mono">{String(i + 1).padStart(2, '0')}</span>
+                  {s}
+                </li>
+              ))
+            }
+          </ol>
+        </div>
+        <div class="fh__col" data-reveal style="--d:2">
+          <p class="mono muted fh__h">Переваги</p>
+          <dl class="fh__adv">
+            {
+              houseAdv.map((a) => (
+                <div>
+                  <dt>{a.t}</dt>
+                  <dd class="muted">{a.d}</dd>
+                </div>
+              ))
+            }
+          </dl>
+        </div>
+      </div>
+      <div class="fh__cta" data-reveal>
+        <Button href={routes.request('house')} tone="light">Обговорити будинок на воді</Button>
+      </div>
+    </div>
+  </section>
+
+  <RelatedProjects n="04" items={projectsFor('water')} theme="paper" />
+  <OtherDirections n="05" current="water" />
+  <CtaBand
+    topic="yacht"
+    title="Плануєте об’єкт на воді?"
+    text="Від окремого пірса до яхт-клубу з нуля: підтримка на всіх етапах — від ідеї до запуску."
+  />
+</PageLayout>
+
+<style>
+  .sec {
+    padding-block: var(--section-pad);
+  }
+
+  /* advantages */
+  .adv {
+    padding-bottom: clamp(56px, 7vw, 104px);
+  }
+  .adv__list {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0;
+    border-top: 1px solid var(--rule-on-paper);
+  }
+  .adv__item {
+    display: grid;
+    gap: 10px;
+    padding: 24px clamp(12px, 2vw, 28px) 0 0;
+  }
+  .adv__item + .adv__item {
+    padding-left: clamp(12px, 2vw, 28px);
+    border-left: 1px solid var(--rule-on-paper);
+  }
+  .adv__value {
+    font-size: clamp(2rem, 3.6vw, 3.75rem);
+    font-weight: 450;
+    letter-spacing: -0.045em;
+    line-height: 1;
+  }
+  .adv__label {
+    margin: 0;
+    font-size: 0.9375rem;
+  }
+
+  /* yacht clubs */
+  .yc {
+    row-gap: 48px;
+    align-items: start;
+  }
+  .yc__fig {
+    grid-column: 1 / span 5;
+    display: grid;
+    gap: 14px;
+    position: sticky;
+    top: calc(var(--header-h) + 90px);
+  }
+  .yc__img {
+    aspect-ratio: 4 / 5;
+    --wipe-slant: 0.55;
+  }
+  .yc__fig figcaption {
+    max-width: 52ch;
+    text-transform: none;
+    letter-spacing: 0.02em;
+    line-height: 1.6;
+  }
+  .yc__body {
+    grid-column: 7 / -1;
+    display: grid;
+    gap: 48px;
+  }
+  .yc__h {
+    margin-bottom: 16px;
+  }
+  .yc__solutions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 1px solid var(--rule-on-paper);
+  }
+  .yc__solutions li {
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+    padding: 18px 12px 18px 0;
+    border-bottom: 1px solid var(--rule-on-paper);
+    font-size: 1.0625rem;
+    font-weight: 450;
+  }
+  .yc__solutions li .mono {
+    color: var(--on-paper-muted);
+  }
+  .yc__cols {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 40px;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .chips li {
+    padding: 9px 16px;
+    border-radius: var(--radius-o);
+    border: 1px solid var(--rule);
+    font-size: 0.9375rem;
+  }
+  .chips--ink li {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .ticks {
+    display: grid;
+    border-top: 1px solid var(--rule);
+  }
+  .ticks li {
+    display: flex;
+    gap: 12px;
+    align-items: baseline;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule);
+  }
+  .ticks li::before {
+    content: '';
+    flex: none;
+    width: 10px;
+    height: 1px;
+    background: currentColor;
+    transform: translateY(-4px);
+  }
+  .consult {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: end;
+    gap: 32px 64px;
+    margin-top: clamp(64px, 8vw, 120px);
+    padding: clamp(28px, 4vw, 56px);
+    border-radius: var(--radius-panel);
+  }
+  .consult__text {
+    display: grid;
+    gap: 16px;
+    max-width: 68ch;
+  }
+  .consult__title {
+    font-size: var(--fs-h3);
+    font-weight: 500;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+  }
+
+  /* pontoons */
+  .pt {
+    row-gap: 40px;
+    align-items: start;
+  }
+  .pt__types {
+    grid-column: 1 / span 5;
+    border-top: 1px solid var(--rule-on-paper);
+  }
+  .pt__type {
+    display: grid;
+    gap: 10px;
+    padding: clamp(20px, 2.4vw, 32px) 0;
+    border-bottom: 1px solid var(--rule-on-paper);
+  }
+  .pt__type .mono {
+    color: var(--on-paper-muted);
+  }
+  .pt__title {
+    font-size: clamp(1.5rem, 2.4vw, 2.25rem);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1.08;
+  }
+  .pt__fig {
+    grid-column: 7 / -1;
+    display: grid;
+    gap: 14px;
+  }
+  .pt__img {
+    aspect-ratio: 3 / 2;
+  }
+  .pt__materials {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 40px;
+  }
+  .pt__rent {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 4px;
+    font-weight: 500;
+    background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
+  }
+  .pt__archive {
+    margin-top: clamp(56px, 7vw, 96px);
+  }
+
+  /* floating houses */
+  .fh {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 48px var(--col-gap);
+  }
+  .fh__h {
+    margin-bottom: 16px;
+  }
+  .ticks--ink {
+    --rule: var(--rule-on-ink);
+  }
+  .fh__services {
+    border-top: 1px solid var(--rule-on-ink);
+  }
+  .fh__services li {
+    display: flex;
+    gap: 14px;
+    align-items: baseline;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule-on-ink);
+  }
+  .fh__services .mono {
+    color: var(--on-ink-muted);
+  }
+  .fh__adv {
+    margin: 0;
+    border-top: 1px solid var(--rule-on-ink);
+  }
+  .fh__adv div {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule-on-ink);
+  }
+  .fh__adv dt {
+    font-weight: 500;
+    font-size: 1.0625rem;
+  }
+  .fh__adv dd {
+    margin: 2px 0 0;
+    font-size: 0.9375rem;
+  }
+  .fh__cta {
+    margin-top: clamp(48px, 6vw, 80px);
+  }
+
+  @media (max-width: 1023px) {
+    .yc__fig,
+    .yc__body,
+    .pt__types,
+    .pt__fig {
+      grid-column: 1 / -1;
+    }
+    .yc__fig {
+      position: static;
+    }
+    .yc__img {
+      aspect-ratio: 4 / 3;
+    }
+    .fh {
+      grid-template-columns: 1fr;
+    }
+    .consult {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 767px) {
+    .adv__list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .adv__item:nth-child(3) {
+      padding-left: 0;
+      border-left: 0;
+    }
+    .adv__item:nth-child(n + 3) {
+      padding-top: 24px;
+      margin-top: 24px;
+      border-top: 1px solid var(--rule-on-paper);
+    }
+    .yc__solutions,
+    .yc__cols {
+      grid-template-columns: 1fr;
+    }
+    .consult :global(.btn),
+    .fh__cta :global(.btn) {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+</style>

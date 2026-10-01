@@ -1,0 +1,170 @@
+---
+/**
+ * Ink section directly after the hero: the company statement lights up word by
+ * word with scroll, followed by the key facts. 24 years (group) and 10+ years
+ * (building on water) are kept as separate, explicitly labelled facts.
+ */
+import SectionLabel from '../ui/SectionLabel.astro';
+import { getDict, type Locale } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getDict(locale).intro;
+const words = t.statement.split(' ');
+---
+
+<section class="intro theme-ink" id="intro" aria-labelledby="intro-title">
+  <div class="container intro__grid grid-12">
+    <SectionLabel n="01" text={t.label} class="intro__label" />
+    <h2 class="intro__statement" id="intro-title" data-words>
+      {
+        words.map((w, i) => (
+          <>
+            <span class="w" style={`--wi:${i}`}>{w}</span>{' '}
+          </>
+        ))
+      }
+    </h2>
+    <p class="intro__sub" data-reveal>{t.sub}</p>
+  </div>
+
+  <div class="container">
+    <dl class="facts">
+      {
+        t.facts.map((f, i) => (
+          <div class="fact" data-reveal style={`--d:${i}`}>
+            <dt class="fact__label mono">{f.label}</dt>
+            <dd class="fact__value">
+              {f.value}
+              {f.unit && <span class="fact__unit">{f.unit}</span>}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+  </div>
+</section>
+
+<style>
+  .intro {
+    position: relative;
+    padding-top: clamp(96px, 13vw, 200px);
+    padding-bottom: clamp(72px, 9vw, 140px);
+  }
+  .intro__grid {
+    row-gap: 40px;
+  }
+  .intro :global(.intro__label) {
+    grid-column: 1 / span 3;
+    align-self: start;
+    padding-top: 0.9em;
+  }
+  .intro__statement {
+    grid-column: 4 / -1;
+    font-size: var(--fs-statement);
+    font-weight: 450;
+    line-height: 1.12;
+    letter-spacing: -0.025em;
+    text-wrap: pretty;
+  }
+  .js .intro__statement .w {
+    opacity: var(--o, 0.16);
+    transition: opacity 280ms linear;
+  }
+  .intro__sub {
+    grid-column: 4 / span 5;
+    font-size: var(--fs-lead);
+    line-height: 1.5;
+    color: var(--on-ink-muted);
+    margin-top: clamp(8px, 2vw, 24px);
+  }
+
+  .facts {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: clamp(80px, 10vw, 160px) 0 0;
+    border-top: 1px solid var(--rule-on-ink);
+  }
+  .fact {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-end;
+    gap: 18px;
+    padding: 28px clamp(16px, 2vw, 32px) 8px 0;
+    border-right: 1px solid var(--rule-on-ink);
+    min-height: 200px;
+  }
+  .fact + .fact {
+    padding-left: clamp(16px, 2vw, 32px);
+  }
+  .fact:last-child {
+    border-right: 0;
+  }
+  .fact__label {
+    color: var(--on-ink-muted);
+    max-width: 22ch;
+  }
+  .fact__value {
+    margin: 0;
+    font-size: clamp(2.5rem, 4.6vw, 5rem);
+    font-weight: 450;
+    letter-spacing: -0.045em;
+    line-height: 0.95;
+    display: flex;
+    align-items: baseline;
+    gap: 0.3em;
+    flex-wrap: wrap;
+  }
+  .fact__unit {
+    font-size: 0.32em;
+    letter-spacing: -0.01em;
+    font-weight: 450;
+    color: var(--on-ink-muted);
+  }
+
+  @media (max-width: 1023px) {
+    .intro :global(.intro__label) {
+      grid-column: 1 / -1;
+      padding-top: 0;
+    }
+    .intro__statement {
+      grid-column: 1 / -1;
+    }
+    .intro__sub {
+      grid-column: 1 / span 9;
+    }
+    .facts {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .fact:nth-child(2) {
+      border-right: 0;
+    }
+    .fact:nth-child(3) {
+      padding-left: 0;
+    }
+    .fact:nth-child(n + 3) {
+      border-top: 1px solid var(--rule-on-ink);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .intro__statement {
+      font-size: clamp(1.625rem, 7vw, 2.25rem);
+      line-height: 1.16;
+    }
+    .intro__sub {
+      grid-column: 1 / -1;
+      font-size: 1rem;
+    }
+    .fact {
+      min-height: 150px;
+      padding-top: 22px;
+      gap: 12px;
+    }
+    .fact__value {
+      font-size: clamp(2.125rem, 10vw, 2.75rem);
+    }
+  }
+</style>

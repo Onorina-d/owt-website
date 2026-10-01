@@ -1,0 +1,81 @@
+---
+/** Phone-only action bar: call, Telegram, Viber, request. Appears after the hero. */
+import Icon from '../ui/Icon.astro';
+import { phones, messengers } from '../../data/site';
+import { routes } from '../../data/routes';
+import { getDict, homePath, type Locale } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getDict(locale).ui;
+const requestHref = Astro.url.pathname === homePath(locale) ? '#request' : routes.request();
+const tg = messengers.find((m) => m.id === 'telegram')!;
+const vb = messengers.find((m) => m.id === 'viber')!;
+---
+
+<nav class="dock" data-dock aria-label="Quick contact">
+  <a href={phones[0].href} class="dock__item">
+    <Icon name="phone" size={20} />
+    <span>{t.call}</span>
+  </a>
+  <a href={tg.href} class="dock__item" target="_blank" rel="noopener">
+    <Icon name="telegram" size={20} />
+    <span>Telegram</span>
+  </a>
+  <a href={vb.href} class="dock__item">
+    <Icon name="viber" size={20} />
+    <span>Viber</span>
+  </a>
+  <a href={requestHref} class="dock__item dock__item--cta" data-topic-link>
+    <span>{t.request}</span>
+  </a>
+</nav>
+
+<style>
+  .dock {
+    display: none;
+  }
+  @media (max-width: 767px) {
+    .dock {
+      position: fixed;
+      left: 10px;
+      right: 10px;
+      bottom: max(10px, env(safe-area-inset-bottom));
+      z-index: 90;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr 1.3fr;
+      gap: 4px;
+      padding: 4px;
+      border-radius: var(--radius-o);
+      background: var(--ink);
+      color: var(--paper);
+      box-shadow: 0 10px 30px rgb(0 0 0 / 0.25);
+      transform: translateY(140%);
+      transition: transform 700ms var(--ease-out);
+    }
+    .dock.is-visible {
+      transform: none;
+    }
+    .dock__item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      min-height: 52px;
+      border-radius: var(--radius-o);
+      font-size: 0.6875rem;
+      font-weight: 500;
+    }
+    .dock__item:active {
+      background: rgb(241 239 234 / 0.1);
+    }
+    .dock__item--cta {
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 0.875rem;
+    }
+  }
+</style>

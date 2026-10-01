@@ -1,0 +1,33 @@
+---
+/** Technical section index: “02 —— НАПРЯМИ”. A thin layer, never the main voice. */
+interface Props {
+  n: string;
+  text: string;
+  class?: string;
+}
+const { n, text, class: cls } = Astro.props;
+---
+
+<p class:list={['label mono', cls]} data-reveal>
+  <span class="label__n">{n}</span>
+  <span class="label__rule" aria-hidden="true"></span>
+  <span class="label__t">{text}</span>
+</p>
+
+<style>
+  .label {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--muted);
+  }
+  .label__n {
+    color: currentColor;
+  }
+  .label__rule {
+    width: 48px;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.6;
+  }
+</style>

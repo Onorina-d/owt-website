@@ -1,0 +1,86 @@
+---
+/** Closing call to action of an inner page: one clear action + direct phones. */
+import Button from '../ui/Button.astro';
+import { phones } from '../../data/site';
+import { routes } from '../../data/routes';
+import type { TopicId } from '../../i18n/uk';
+
+interface Props {
+  title: string;
+  text: string;
+  topic?: TopicId;
+  cta?: string;
+}
+const { title, text, topic, cta = 'Отримати консультацію' } = Astro.props;
+---
+
+<section class="cta theme-ink" data-dock-stop>
+  <div class="container cta__inner">
+    <div class="cta__text">
+      <p class="mono muted" data-reveal>Консультація</p>
+      <h2 class="cta__title" data-lines><span class="line"><span>{title}</span></span></h2>
+      <p class="cta__lead muted" data-reveal style="--d:2">{text}</p>
+    </div>
+    <div class="cta__actions" data-reveal style="--d:3">
+      <Button href={routes.request(topic)} tone="light">{cta}</Button>
+      <div class="cta__phones">
+        {phones.map((p) => <a href={p.href}>{p.display}</a>)}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta {
+    padding-block: clamp(80px, 11vw, 160px);
+  }
+  .cta__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 48px var(--col-gap);
+    align-items: end;
+  }
+  .cta__text {
+    display: grid;
+    gap: 22px;
+  }
+  .cta__title {
+    font-size: var(--fs-h2);
+    font-weight: 500;
+    line-height: var(--lh-heading);
+    letter-spacing: var(--track-tight);
+    text-wrap: balance;
+  }
+  .cta__lead {
+    max-width: 44ch;
+    font-size: var(--fs-lead);
+  }
+  .cta__actions {
+    display: grid;
+    gap: 28px;
+    justify-items: start;
+  }
+  .cta__phones {
+    display: grid;
+    gap: 4px;
+    font-size: clamp(1.25rem, 1.8vw, 1.75rem);
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .cta__phones a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+    text-decoration-thickness: 1px;
+  }
+  @media (max-width: 1023px) {
+    .cta__inner {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 767px) {
+    .cta__actions :global(.btn) {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+</style>

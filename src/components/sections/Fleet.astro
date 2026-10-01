@@ -1,0 +1,315 @@
+---
+/**
+ * Capability: headline machine figures as large editorial numerals, the full
+ * rental list as a spec sheet, and one tall photograph anchoring the layout.
+ */
+import SectionLabel from '../ui/SectionLabel.astro';
+import Img from '../ui/Img.astro';
+import Button from '../ui/Button.astro';
+import { media } from '../../data/media';
+import { routes } from '../../data/routes';
+import Icon from '../ui/Icon.astro';
+import { getDict, type Locale } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getDict(locale).fleet;
+---
+
+<section class="fleet theme-stone" id="fleet" aria-labelledby="fleet-title">
+  <header class="container grid-12 fleet__head">
+    <SectionLabel n="04" text={t.label} class="fleet__label" />
+    <h2 class="h2 fleet__title" id="fleet-title" data-lines>
+      <span class="line"><span>{t.title}</span></span>
+    </h2>
+    <p class="lead fleet__lead" data-reveal style="--d:2">{t.lead}</p>
+  </header>
+
+  <div class="container grid-12 fleet__body">
+    <figure class="fleet__fig">
+      <div class="fleet__img media-frame" data-wipe>
+        <Img
+          src={media.longreach}
+          widths={[640, 960, 1400]}
+          sizes="(max-width: 767px) 100vw, 40vw"
+          alt={t.caption}
+          loading="lazy"
+        />
+      </div>
+      <figcaption class="mono muted">{t.caption}</figcaption>
+    </figure>
+
+    <div class="fleet__data">
+      <dl class="specs">
+        {
+          t.specs.map((s, i) => (
+            <div class="spec" data-reveal style={`--d:${i}`}>
+              <dt class="spec__label">{s.label}</dt>
+              <dd class="spec__value">
+                <span class="spec__num">{s.value}</span>
+                <span class="spec__unit">{s.unit}</span>
+              </dd>
+              <dd class="spec__note mono">{s.note}</dd>
+            </div>
+          ))
+        }
+      </dl>
+
+      <div class="sheet" data-reveal>
+        <h3 class="sheet__title mono">{t.tableTitle}</h3>
+        <table class="sheet__table">
+          <thead class="visually-hidden">
+            <tr>
+              <th scope="col">{t.tableHead[0]}</th>
+              <th scope="col">{t.tableHead[1]}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {
+              t.rows.map(([name, spec], i) => (
+                <tr>
+                  <td class="sheet__n mono">{String(i + 1).padStart(2, '0')}</td>
+                  <th scope="row" class="sheet__name">
+                    {name}
+                  </th>
+                  <td class="sheet__spec">{spec}</td>
+                </tr>
+              ))
+            }
+          </tbody>
+        </table>
+        <div class="sheet__cta">
+          <Button href="#request" data-topic-link="rental">{t.cta}</Button>
+          {
+            locale === 'uk' && (
+              <a class="sheet__all" href={routes.fleet}>
+                {t.all}
+                <Icon name="arrow" size={16} />
+              </a>
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .fleet {
+    padding-block: var(--section-pad);
+  }
+  .fleet__head {
+    row-gap: 28px;
+    padding-bottom: clamp(56px, 8vw, 120px);
+  }
+  .fleet :global(.fleet__label) {
+    grid-column: 1 / -1;
+  }
+  .fleet__title {
+    grid-column: 1 / span 8;
+  }
+  .fleet__lead {
+    grid-column: 9 / -1;
+    align-self: end;
+  }
+
+  .fleet__body {
+    align-items: start;
+  }
+  .fleet__fig {
+    grid-column: 1 / span 5;
+    position: sticky;
+    top: calc(var(--header-h) + 24px);
+    display: grid;
+    gap: 16px;
+  }
+  .fleet__img {
+    aspect-ratio: 4 / 5;
+    --wipe-slant: 0.55;
+  }
+  .fleet__data {
+    grid-column: 7 / -1;
+  }
+
+  .specs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0;
+    border-top: 1px solid var(--rule-on-paper);
+  }
+  .spec {
+    display: flex;
+    flex-direction: column;
+    padding: 24px 24px 36px 0;
+    border-bottom: 1px solid var(--rule-on-paper);
+  }
+  .spec:nth-child(odd) {
+    border-right: 1px solid var(--rule-on-paper);
+  }
+  .spec:nth-child(even) {
+    padding-left: 28px;
+  }
+  .spec__label {
+    order: 2;
+    margin-top: 14px;
+    font-size: 1.0625rem;
+    font-weight: 450;
+  }
+  .spec__value {
+    order: 1;
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .spec__num {
+    font-size: clamp(3.25rem, 6vw, 6.5rem);
+    font-weight: 400;
+    line-height: 0.9;
+    letter-spacing: -0.055em;
+    font-variant-numeric: tabular-nums;
+  }
+  .spec__unit {
+    white-space: nowrap;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    letter-spacing: 0.04em;
+    color: var(--on-paper-muted);
+  }
+  .spec__note {
+    order: 3;
+    margin: 8px 0 0;
+    color: var(--on-paper-muted);
+  }
+
+  .sheet {
+    margin-top: clamp(64px, 7vw, 112px);
+  }
+  .sheet__title {
+    color: var(--on-paper-muted);
+    padding-bottom: 16px;
+    font-weight: 500;
+  }
+  .sheet__table {
+    width: 100%;
+    border-collapse: collapse;
+    border-top: 1px solid var(--ink);
+  }
+  .sheet__table tr {
+    border-bottom: 1px solid var(--rule-on-paper);
+    transition: background-color var(--dur-1);
+  }
+  .sheet__table tbody tr:hover {
+    background: rgb(16 19 22 / 0.04);
+  }
+  .sheet__table th,
+  .sheet__table td {
+    padding: 18px 0;
+    text-align: left;
+    vertical-align: baseline;
+    font-weight: 450;
+  }
+  .sheet__n {
+    width: 3.5em;
+    color: var(--on-paper-muted);
+  }
+  .sheet__name {
+    font-size: 1.0625rem;
+    font-weight: 500 !important;
+    padding-right: 24px !important;
+  }
+  .sheet__spec {
+    color: var(--on-paper-muted);
+    font-size: 0.9375rem;
+  }
+  .sheet__cta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px 32px;
+    margin-top: 40px;
+  }
+  .sheet__all {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 4px;
+    font-weight: 500;
+    background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
+  }
+
+  @media (max-width: 1023px) {
+    .fleet__title {
+      grid-column: 1 / -1;
+    }
+    .fleet__lead {
+      grid-column: 1 / span 9;
+    }
+    .fleet__fig {
+      grid-column: 1 / span 5;
+    }
+    .fleet__data {
+      grid-column: 6 / -1;
+    }
+    .spec__num {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .fleet__lead {
+      grid-column: 1 / -1;
+    }
+    .fleet__fig {
+      position: static;
+      grid-column: 1 / -1;
+      margin-inline: calc(var(--gutter) * -1);
+    }
+    .fleet__fig figcaption {
+      padding-inline: var(--gutter);
+    }
+    .fleet__img {
+      border-radius: 0; /* full-bleed on phones */
+    }
+    .fleet__data {
+      grid-column: 1 / -1;
+      margin-top: 48px;
+    }
+    .spec {
+      padding: 20px 14px 26px 0;
+    }
+    .spec:nth-child(even) {
+      padding-left: 14px;
+    }
+    .spec__num {
+      font-size: clamp(2.5rem, 12vw, 3.25rem);
+    }
+    .spec__label {
+      font-size: 0.9375rem;
+    }
+    .sheet__table,
+    .sheet__table tbody,
+    .sheet__table tr {
+      display: block;
+    }
+    .sheet__table tr {
+      display: grid;
+      grid-template-columns: 2.6em 1fr;
+      padding: 14px 0;
+    }
+    .sheet__table th,
+    .sheet__table td {
+      padding: 0;
+    }
+    .sheet__spec {
+      grid-column: 2;
+      margin-top: 4px;
+    }
+    .sheet__cta :global(.btn) {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+</style>

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OWT — варіанти Hero</title>
+<style>
+  :root{--ink:#101316;--paper:#F1EFEA;--muted:rgba(241,239,234,.62)}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ink);color:var(--paper);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+  header{padding:40px 32px 8px}
+  h1{font-weight:500;letter-spacing:-.03em;font-size:40px;margin:0 0 8px}
+  header p{color:var(--muted);max-width:70ch;margin:0}
+  .c{padding:32px;border-top:1px solid rgba(241,239,234,.14);display:grid;grid-template-columns:minmax(0,3fr) minmax(0,1fr);gap:24px;align-items:start}
+  .hero{position:relative;aspect-ratio:16/9;border-radius:14px;overflow:hidden;background:#222}
+  .hero img,.phone img{width:100%;height:100%;object-fit:cover;display:block}
+  .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(16,19,22,.86),rgba(16,19,22,.5) 34%,rgba(16,19,22,0) 62%),linear-gradient(to bottom,rgba(16,19,22,.45),rgba(16,19,22,0) 22%)}
+  .txt{position:absolute;left:4%;bottom:7%;z-index:1;max-width:70%}
+  .txt small{font:11px ui-monospace,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  .txt b{display:block;font-weight:500;font-size:clamp(22px,3.6vw,56px);line-height:.95;letter-spacing:-.045em;margin-top:8px}
+  .side{display:grid;gap:14px}
+  .phone{position:relative;aspect-ratio:9/19.5;width:62%;border-radius:22px;overflow:hidden;background:#222;border:1px solid rgba(241,239,234,.2)}
+  .phone::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(16,19,22,.9),rgba(16,19,22,0) 60%)}
+  .n{font:12px ui-monospace,Menlo,monospace;letter-spacing:.14em;color:var(--muted)}
+  .t{font-size:20px;font-weight:500;letter-spacing:-.02em}
+  dl{margin:0;display:grid;gap:6px}
+  dt{font:11px ui-monospace,Menlo,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+  dd{margin:0 0 6px}
+  a{color:var(--paper)}
+  .rec{display:inline-block;padding:3px 10px;border-radius:999px;background:var(--paper);color:var(--ink);font-size:12px;font-weight:600}
+  footer{padding:32px;color:var(--muted);border-top:1px solid rgba(241,239,234,.14)}
+  @media (max-width:900px){.c{grid-template-columns:1fr}.phone{width:40%}}
+</style>
+</head>
+<body>
+<header>
+  <h1>Варіанти Hero — стоковий кадр</h1>
+  <p>Масштаб — як у реальних об’єктів OWT: понтони, пірси, причали на спокійній воді. Усі кадри — Unsplash, безкоштовна Unsplash License (не Unsplash+). Зображення тут підвантажуються з Unsplash, нічого не завантажено в проєкт.</p>
+</header>
+<main id="list"></main>
+<footer>
+  <b>Unsplash License:</b> дозволено безкоштовно копіювати, змінювати й використовувати, зокрема комерційно, без дозволу автора; зазначати автора не обов’язково. Заборонено продавати фото без суттєвої переробки та збирати фото для схожого/конкурентного сервісу. Ліцензія не дає гарантій і не містить релізів на впізнавані об’єкти — на сайті кадр не слід підписувати як проєкт OWT.
+</footer>
+<script>
+const items=[
+ {n:'A',rec:true,title:'Понтон у тумані — мінімалізм, “журнальна” тиша',url:'https://unsplash.com/photos/a-dock-with-two-poles-sticking-out-of-the-water-tIeOUlrxS2A',img:'https://images.unsplash.com/photo-1687704947160-bf4d928f429d',author:'Hansjörg Rath',where:'Австрія',size:'6000 × 4000',pos:'50% 60%',note:'Найближче до “реальний понтон OWT, знятий для архітектурного журналу”. Світлий, нейтральний; білий текст тримається на затемненні знизу.'},
+ {n:'B',rec:true,title:'Пірс згори на глибокій зеленій воді — дрон, геометрія',url:'https://unsplash.com/photos/aerial-view-of-a-long-white-pier-on-green-water-wabP_GuMWYw',img:'https://images.unsplash.com/photo-1769057266204-341dc7198b7c',author:'Daniel Miksha',where:'—',size:'3775 × 2154',pos:'50% 50%',note:'Та сама логіка, що й аерозйомка OWT, але чистіше. Багато темного простору для тексту.'},
+ {n:'C',title:'Плавуча платформа на світанку — кінематографічне світло',url:'https://unsplash.com/photos/brown-wooden-dock-on-calm-water-during-daytime-OyiSf0nVz7U',img:'https://images.unsplash.com/photo-1595947006841-0984683d036e',author:'Mark Olsen',where:'Raymond, США',size:'4633 × 2606',pos:'50% 60%',note:'Найемоційніший кадр. Тепла палітра — тепліша за нашу серію фото.'},
+ {n:'D',title:'Пірс з понтонами та елінгом — аерозйомка',url:'https://unsplash.com/photos/aerial-photography-of-blue-speedboat-near-dock-4ajRZAs-FoM',img:'https://images.unsplash.com/photo-1542731382-35979354b300',author:'Wai Siew',where:'Гонконг',size:'4000 × 2998',pos:'55% 45%',note:'Найбільше “інженерії”: пірс, плавучі секції, елінг. Масштаб — як у проєктах OWT.'},
+ {n:'E',title:'Довгий пірс у тумані — симетрія',url:'https://unsplash.com/photos/brown-wooden-dock-with-cloudy-sky-k87jn9fnYdY',img:'https://images.unsplash.com/photo-1493898719456-b0e84bba5fcc',author:'Fabrice Villard',where:'—',size:'4896 × 3264',pos:'50% 70%',note:'Дуже чисто й спокійно; трохи більше “відпочинку”, ніж інженерії.'},
+ {n:'F',title:'Пірс на світанку в димці — атмосфера озера',url:'https://unsplash.com/photos/gray-wooden-pallet-sea-dock-with-fog-6k_rbfLkqSA',img:'https://images.unsplash.com/photo-1532979772520-f2763956cce0',author:'Brett Belcher',where:'Gorham, Канада',size:'4032 × 3024',pos:'50% 60%',note:'М’яке світло й туман; простий дерев’яний пірс.'},
+];
+const list=document.getElementById('list');
+for(const it of items){
+  const src=`${it.img}?w=1800&q=75&auto=format`, mob=`${it.img}?w=700&q=70&auto=format`;
+  list.insertAdjacentHTML('beforeend',`<section class="c">
+   <div class="hero"><img src="${src}" alt="" style="object-position:${it.pos}" loading="lazy"><div class="txt"><small>Ost West Technology — група компаній</small><b>Гідротехніка.<br>Будівництво на воді.<br>Великі дерева.</b></div></div>
+   <div class="side">
+     <div class="n">ВАРІАНТ ${it.n} ${it.rec?'<span class="rec">рекомендую</span>':''}</div>
+     <div class="t">${it.title}</div>
+     <div class="phone"><img src="${mob}" alt="" style="object-position:${it.pos}" loading="lazy"></div>
+     <dl><dt>Автор</dt><dd>${it.author}</dd><dt>Місце</dt><dd>${it.where}</dd><dt>Оригінал</dt><dd>${it.size} px</dd><dt>Ліцензія</dt><dd>Unsplash License (безкоштовна)</dd><dt>Джерело</dt><dd><a href="${it.url}" target="_blank" rel="noopener">unsplash.com</a></dd></dl>
+     <p style="margin:0;color:var(--muted)">${it.note}</p>
+   </div></section>`);
+}
+</script>
+</body>
+</html>

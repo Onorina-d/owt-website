@@ -1,0 +1,79 @@
+---
+/** Framed video poster; opens OWT’s YouTube video in the shared dialog. */
+import type { ImageMetadata } from 'astro';
+import Img from '../ui/Img.astro';
+import Icon from '../ui/Icon.astro';
+
+interface Props {
+  video: string;
+  poster: ImageMetadata;
+  title: string;
+}
+const { video, poster, title } = Astro.props;
+---
+
+<button class="vposter media-frame" type="button" data-video-open={video} aria-label={`Дивитися відео: ${title}`}>
+  <Img src={poster} alt="" sizes="(min-width: 1024px) 60vw, 100vw" widths={[640, 960, 1280, 1600]} />
+  <span class="vposter__shade" aria-hidden="true"></span>
+  <span class="vposter__ui">
+    <span class="vposter__dot"><Icon name="play" size={22} /></span>
+    <span class="vposter__label">
+      <span class="mono">Відео з об’єкта</span>
+      <span class="vposter__title">{title}</span>
+    </span>
+  </span>
+</button>
+
+<style>
+  .vposter {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    text-align: left;
+    color: var(--paper);
+    cursor: pointer;
+  }
+  .vposter :global(img) {
+    transition: transform 1400ms var(--ease-out);
+  }
+  .vposter__shade {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgb(16 19 22 / 0.7), rgb(16 19 22 / 0) 60%);
+  }
+  .vposter__ui {
+    position: absolute;
+    left: clamp(16px, 2.4vw, 32px);
+    right: clamp(16px, 2.4vw, 32px);
+    bottom: clamp(16px, 2.4vw, 32px);
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .vposter__dot {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: clamp(56px, 6vw, 76px);
+    height: clamp(56px, 6vw, 76px);
+    border-radius: var(--radius-o);
+    background: var(--paper);
+    color: var(--ink);
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+  .vposter__label {
+    display: grid;
+    gap: 4px;
+  }
+  .vposter__title {
+    font-size: clamp(1.0625rem, 1.5vw, 1.5rem);
+    font-weight: 500;
+    letter-spacing: -0.015em;
+  }
+  .vposter:hover :global(img) {
+    transform: scale(1.04);
+  }
+  .vposter:hover .vposter__dot {
+    transform: scale(1.06);
+  }
+</style>

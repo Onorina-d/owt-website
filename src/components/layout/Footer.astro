@@ -1,0 +1,206 @@
+---
+import Icon from '../ui/Icon.astro';
+import { phones, socials } from '../../data/site';
+import { routes, directionLinks } from '../../data/routes';
+import { getDict, homePath, type Locale } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const d = getDict(locale);
+const t = d.footer;
+---
+
+<footer class="footer theme-ink">
+  <div class="container grid-12 footer__cols">
+    <p class="footer__about muted">{t.about}</p>
+
+    <nav class="footer__col footer__col--first" aria-label={t.cols.directions}>
+      <p class="mono muted">{t.cols.directions}</p>
+      <ul>
+        {
+          locale === 'uk'
+            ? directionLinks.map((l) => (
+                <li>
+                  <a href={l.href}>{l.label}</a>
+                </li>
+              ))
+            : d.directions.items.map((item) => (
+                <li>
+                  <a href={`#dir-${item.id}`}>{item.title}</a>
+                </li>
+              ))
+        }
+        <li><a href={locale === 'uk' ? routes.fleet : '#fleet'}>{d.fleet.tableTitle}</a></li>
+      </ul>
+    </nav>
+
+    <nav class="footer__col" aria-label={t.cols.company}>
+      <p class="mono muted">{t.cols.company}</p>
+      <ul>
+        {
+          d.nav.map((item) => (
+            <li>
+              <a href={item.href}>{item.label}</a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="footer__col">
+      <p class="mono muted">{t.cols.contact}</p>
+      <ul>
+        {
+          phones.map((p) => (
+            <li>
+              <a href={p.href}>{p.display}</a>
+            </li>
+          ))
+        }
+        {
+          d.contact.addresses.map((a) => (
+            <li class="muted footer__addr">
+              {a.city}, {a.line}
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+
+    <div class="footer__col">
+      <p class="mono muted">{t.cols.social}</p>
+      <ul>
+        {
+          socials.map((s) => (
+            <li>
+              <a href={s.href} target="_blank" rel="noopener">
+                {s.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
+
+  <div class="container footer__mark">
+    <img class="footer__logo" src="/brand/owt-logo-paper.svg" width="1515" height="506" alt="OWT — Ost West Technology" loading="lazy" decoding="async" />
+  </div>
+
+  <div class="container footer__bar mono">
+    <span>{t.rights}</span>
+    <span class="footer__coords">{t.coords}</span>
+    <span class="footer__langs">
+      <a href={homePath('uk')} aria-current={locale === 'uk' ? 'true' : undefined} lang="uk">UA</a>
+      <a href={homePath('en')} aria-current={locale === 'en' ? 'true' : undefined} lang="en">EN</a>
+    </span>
+    <a class="footer__top" href="#top">
+      {d.ui.toTop}
+      <Icon name="arrow" size={14} class="footer__top-icon" />
+    </a>
+  </div>
+</footer>
+
+<style>
+  .footer {
+    padding-top: clamp(72px, 8vw, 120px);
+    border-top: 1px solid var(--rule-on-ink);
+  }
+  .footer__cols {
+    row-gap: 48px;
+  }
+  .footer__about {
+    grid-column: 1 / span 3;
+    max-width: 34ch;
+    font-size: 1.0625rem;
+    line-height: 1.5;
+  }
+  .footer__col {
+    grid-column: span 2;
+    display: grid;
+    align-content: start;
+    gap: 18px;
+  }
+  .footer__col--first {
+    grid-column: 5 / span 2;
+  }
+  .footer__col ul {
+    display: grid;
+    gap: 10px;
+  }
+  .footer__col a {
+    font-size: 0.9375rem;
+    transition: opacity var(--dur-1);
+  }
+  .footer__col a:hover {
+    opacity: 0.6;
+  }
+  .footer__addr {
+    font-size: 0.875rem;
+    line-height: 1.45;
+    margin-top: 6px;
+  }
+
+  .footer__mark {
+    padding-top: clamp(80px, 10vw, 160px);
+    padding-bottom: clamp(32px, 4vw, 56px);
+  }
+  .footer__logo {
+    width: 100%;
+    height: auto;
+  }
+
+  .footer__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px 32px;
+    padding-top: 22px;
+    padding-bottom: max(28px, env(safe-area-inset-bottom));
+    border-top: 1px solid var(--rule-on-ink);
+    color: var(--on-ink-muted);
+  }
+  .footer__langs {
+    display: flex;
+    gap: 14px;
+  }
+  .footer__langs a[aria-current='true'] {
+    color: var(--on-ink);
+  }
+  .footer__top {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--on-ink);
+  }
+  .footer__top :global(.footer__top-icon) {
+    transform: rotate(-90deg);
+  }
+
+  @media (max-width: 1023px) {
+    .footer__about {
+      grid-column: 1 / -1;
+    }
+    .footer__col,
+    .footer__col--first {
+      grid-column: span 3;
+    }
+  }
+  @media (max-width: 767px) {
+    .footer__col,
+    .footer__col--first {
+      grid-column: span 6;
+    }
+    .footer__bar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+    }
+    .footer__coords {
+      grid-column: 1 / -1;
+      order: -1;
+    }
+  }
+</style>

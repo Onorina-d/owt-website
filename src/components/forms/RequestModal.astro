@@ -1,0 +1,550 @@
+---
+/**
+ * Project request modal — opened by every request CTA on the site
+ * (links to #request / elements with data-topic-link; see site.ts).
+ * Native <dialog>: modal focus containment, Escape, inert page behind.
+ * Interface only — no delivery yet. Without JS the CTAs keep working as
+ * links to the contact form.
+ */
+import Button from '../ui/Button.astro';
+import Icon from '../ui/Icon.astro';
+import { getDict, type Locale } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const topics = getDict(locale).contact.form.topics;
+
+const copy = {
+  uk: {
+    kicker: 'OWT · Заявка',
+    title: 'Обговоримо ваш проєкт',
+    lead: 'Залиште контакти та коротко опишіть задачу. Ми зв’яжемося з вами для уточнення деталей.',
+    close: 'Закрити',
+    name: 'Ім’я',
+    phone: 'Телефон',
+    email: 'Email',
+    optional: 'необов’язково',
+    required: 'обов’язково',
+    topic: 'Напрям / тип проєкту',
+    topicPlaceholder: 'Оберіть напрям',
+    task: 'Коротко про задачу',
+    taskPlaceholder: 'Локація, обсяг робіт, бажані терміни',
+    namePlaceholder: 'Як до вас звертатися',
+    phonePlaceholder: '+38 0__ ___ __ __',
+    emailPlaceholder: 'name@company.com',
+    submit: 'Надіслати заявку',
+    consent: 'Натискаючи кнопку, я даю згоду на обробку своїх персональних даних.',
+    errName: 'Вкажіть ваше ім’я',
+    errPhone: 'Вкажіть номер телефону повністю',
+    errEmail: 'Перевірте адресу email',
+    errTopic: 'Оберіть напрям',
+    errTask: 'Опишіть задачу кількома словами',
+    successTitle: 'Дякуємо! Заявку прийнято.',
+    successText: 'Ми зв’яжемося з вами для уточнення деталей.',
+  },
+  en: {
+    kicker: 'OWT · Request',
+    title: 'Let’s discuss your project',
+    lead: 'Leave your contacts and briefly describe the task. We will get in touch to clarify the details.',
+    close: 'Close',
+    name: 'Name',
+    phone: 'Phone',
+    email: 'Email',
+    optional: 'optional',
+    required: 'required',
+    topic: 'Direction / project type',
+    topicPlaceholder: 'Choose a direction',
+    task: 'About the task',
+    taskPlaceholder: 'Location, scope of work, preferred timing',
+    namePlaceholder: 'How should we address you',
+    phonePlaceholder: '+38 0__ ___ __ __',
+    emailPlaceholder: 'name@company.com',
+    submit: 'Send request',
+    consent: 'By clicking the button, I consent to the processing of my personal data.',
+    errName: 'Please enter your name',
+    errPhone: 'Please enter a full phone number',
+    errEmail: 'Please check the email address',
+    errTopic: 'Please choose a direction',
+    errTask: 'Please describe the task in a few words',
+    successTitle: 'Thank you! Request received.',
+    successText: 'We will get in touch to clarify the details.',
+  },
+}[locale];
+---
+
+<dialog class="rm" data-request-modal aria-labelledby="rm-title" aria-describedby="rm-lead">
+  <div class="rm__panel theme-ink" data-rm-panel>
+    <button class="rm__close" type="button" data-rm-close>
+      <span class="visually-hidden">{copy.close}</span>
+      <Icon name="close" size={20} />
+    </button>
+
+    <form class="rm__form" data-rm-form method="post" action="/kontakty/#request" novalidate>
+      <div class="rm__fields" data-rm-fields>
+        <header class="rm__head">
+          <p class="mono rm__kicker">{copy.kicker}</p>
+          <h2 class="rm__title" id="rm-title" tabindex="-1">{copy.title}</h2>
+          <p class="rm__lead" id="rm-lead">{copy.lead}</p>
+        </header>
+
+        <div class="rm__row">
+          <div class="field" data-rm-field="name">
+            <label class="label" for="rm-name">
+              {copy.name} <span class="req" aria-hidden="true">*</span><span class="visually-hidden">({copy.required})</span>
+            </label>
+            <div class="control">
+              <input id="rm-name" class="control__input" name="name" type="text" autocomplete="name" placeholder={copy.namePlaceholder} required aria-describedby="rm-name-err" />
+            </div>
+            <p class="err" id="rm-name-err" hidden>{copy.errName}</p>
+          </div>
+
+          <div class="field" data-rm-field="phone">
+            <label class="label" for="rm-phone">
+              {copy.phone} <span class="req" aria-hidden="true">*</span><span class="visually-hidden">({copy.required})</span>
+            </label>
+            <div class="control">
+              <input id="rm-phone" class="control__input" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder={copy.phonePlaceholder} required aria-describedby="rm-phone-err" />
+              <svg class="control__ok" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M3 8.5l3.2 3L13 4.5" fill="none" stroke="currentColor" stroke-width="1.8"></path></svg>
+            </div>
+            <p class="err" id="rm-phone-err" hidden>{copy.errPhone}</p>
+          </div>
+        </div>
+
+        <div class="field" data-rm-field="email">
+          <label class="label" for="rm-email">
+            {copy.email} <span class="opt">({copy.optional})</span>
+          </label>
+          <div class="control">
+            <input id="rm-email" class="control__input" name="email" type="email" inputmode="email" autocomplete="email" placeholder={copy.emailPlaceholder} aria-describedby="rm-email-err" />
+          </div>
+          <p class="err" id="rm-email-err" hidden>{copy.errEmail}</p>
+        </div>
+
+        <div class="field" data-rm-field="topic">
+          <label class="label" for="rm-topic">
+            {copy.topic} <span class="req" aria-hidden="true">*</span><span class="visually-hidden">({copy.required})</span>
+          </label>
+          <div class="control control--select">
+            <select id="rm-topic" class="control__input" name="topic" required aria-describedby="rm-topic-err">
+              <option value="" disabled selected>{copy.topicPlaceholder}</option>
+              {topics.map((t) => <option value={t.id}>{t.label}</option>)}
+            </select>
+            <svg class="control__chevron" viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M3.5 6l4.5 4.5L12.5 6" fill="none" stroke="currentColor" stroke-width="1.6"></path></svg>
+          </div>
+          <p class="err" id="rm-topic-err" hidden>{copy.errTopic}</p>
+        </div>
+
+        <div class="field" data-rm-field="task">
+          <label class="label" for="rm-task">
+            {copy.task} <span class="req" aria-hidden="true">*</span><span class="visually-hidden">({copy.required})</span>
+          </label>
+          <div class="control control--area">
+            <textarea id="rm-task" class="control__input" name="task" rows="3" placeholder={copy.taskPlaceholder} required aria-describedby="rm-task-err"></textarea>
+          </div>
+          <p class="err" id="rm-task-err" hidden>{copy.errTask}</p>
+        </div>
+
+        <div class="rm__submit">
+          <Button type="submit" tone="light" class="rm__btn" data-rm-submit>{copy.submit}</Button>
+          <p class="rm__consent">{copy.consent}</p>
+        </div>
+      </div>
+
+      <div class="rm__success" data-rm-success hidden tabindex="-1">
+        <span class="rm__check" aria-hidden="true"></span>
+        <p class="rm__success-title">{copy.successTitle}</p>
+        <p class="rm__lead">{copy.successText}</p>
+        <button class="rm__done" type="button" data-rm-close>{copy.close}</button>
+      </div>
+      <p class="visually-hidden" aria-live="polite" data-rm-status></p>
+    </form>
+  </div>
+</dialog>
+
+<style>
+  /* ---------- Dialog & backdrop ---------- */
+  .rm {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 24px;
+    border: 0;
+    background: transparent;
+    overflow: hidden;
+  }
+  .rm[open] {
+    display: grid;
+    place-items: center;
+  }
+  .rm::backdrop {
+    background: rgb(16 19 22 / 0.55);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    animation: rm-fade 360ms var(--ease-out) both;
+  }
+  .rm.is-closing::backdrop {
+    animation: rm-fade-out 240ms var(--ease-in-out) both;
+  }
+
+  .rm__panel {
+    --line: rgb(241 239 234 / 0.3);
+    --line-hover: rgb(241 239 234 / 0.55);
+    --fill: rgb(241 239 234 / 0.05);
+    --fill-hover: rgb(241 239 234 / 0.08);
+    --fill-focus: rgb(241 239 234 / 0.1);
+    --error: #f0a08b;
+    --error-fill: rgb(240 160 139 / 0.09);
+    position: relative;
+    width: min(600px, 100%);
+    max-height: 100%; /* the dialog's content box: viewport minus its padding */
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: clamp(28px, 4vw, 44px);
+    border-radius: var(--radius-panel);
+    border: 1px solid var(--rule-on-ink);
+    background: var(--ink-2);
+    box-shadow: 0 30px 80px rgb(0 0 0 / 0.35);
+    animation: rm-in 520ms var(--ease-out) both;
+  }
+  .rm.is-closing .rm__panel {
+    animation: rm-out 240ms var(--ease-in-out) both;
+  }
+  @keyframes rm-in {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 18px, 0) scale(0.985);
+    }
+  }
+  @keyframes rm-out {
+    to {
+      opacity: 0;
+      transform: translate3d(0, 12px, 0) scale(0.99);
+    }
+  }
+  @keyframes rm-fade {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes rm-fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+
+  .rm__close {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-o);
+    border: 1px solid var(--rule-on-ink);
+    color: var(--paper);
+    transition:
+      background-color var(--dur-1),
+      color var(--dur-1),
+      border-color var(--dur-1);
+  }
+  .rm__close:hover {
+    background: var(--paper);
+    color: var(--ink);
+    border-color: var(--paper);
+  }
+  .rm__close:focus-visible {
+    outline: 2px solid var(--paper);
+    outline-offset: 3px;
+  }
+
+  /* ---------- Content ---------- */
+  .rm__fields {
+    display: grid;
+    gap: 24px;
+  }
+  .rm__head {
+    display: grid;
+    gap: 12px;
+    padding-right: 48px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--rule-on-ink);
+  }
+  .rm__kicker {
+    color: var(--on-ink-muted);
+  }
+  .rm__title {
+    font-size: clamp(1.75rem, 3vw, 2.375rem);
+    font-weight: 500;
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    outline: none;
+  }
+  .rm__lead {
+    color: var(--on-ink-muted);
+    font-size: 1rem;
+    line-height: 1.5;
+    max-width: 46ch;
+  }
+  .rm__row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 24px 16px;
+    align-items: start;
+  }
+
+  /* ---------- Fields (same states as the contact form) ---------- */
+  .label {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    margin-bottom: 10px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--on-ink);
+  }
+  .req {
+    font-weight: 600;
+  }
+  .opt {
+    font-weight: 400;
+    color: var(--on-ink-muted);
+  }
+  .control {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 56px;
+    border-radius: var(--radius-field);
+    border: 1px solid var(--line);
+    background: var(--fill);
+    overflow: hidden;
+    transition:
+      border-color var(--dur-1) ease,
+      background-color var(--dur-1) ease,
+      box-shadow var(--dur-1) ease;
+  }
+  .control:hover {
+    border-color: var(--line-hover);
+    background: var(--fill-hover);
+  }
+  .control:focus-within {
+    border-color: var(--paper);
+    background: var(--fill-focus);
+    box-shadow: 0 0 0 3px rgb(241 239 234 / 0.16);
+  }
+  .control:has(.control__input:not(:placeholder-shown)),
+  .control--select:has(select:valid) {
+    border-color: rgb(241 239 234 / 0.6);
+  }
+  .control__input {
+    flex: 1;
+    min-width: 0;
+    height: 54px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    color: var(--on-ink);
+    font-size: 1.0625rem; /* ≥16px: no zoom on iOS */
+    font-weight: 450;
+    outline: none;
+  }
+  .control__input::placeholder {
+    color: rgb(241 239 234 / 0.38);
+    opacity: 1;
+  }
+  .control--select select {
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 44px;
+    cursor: pointer;
+  }
+  .control--select select:invalid {
+    color: rgb(241 239 234 / 0.45);
+  }
+  .control--select option {
+    color: var(--ink);
+    background: var(--paper);
+  }
+  .control__chevron {
+    position: absolute;
+    right: 16px;
+    pointer-events: none;
+    color: var(--on-ink-muted);
+  }
+  .control--area {
+    align-items: stretch;
+  }
+  .control--area .control__input {
+    height: auto;
+    min-height: 112px;
+    padding: 14px 16px;
+    line-height: 1.5;
+    resize: vertical;
+  }
+  .control__ok {
+    flex: none;
+    margin-right: 16px;
+    color: var(--paper);
+    opacity: 0;
+    transform: scale(0.6);
+    transition:
+      opacity var(--dur-1) ease,
+      transform var(--dur-1) ease;
+  }
+  .field.is-valid .control__ok {
+    opacity: 1;
+    transform: none;
+  }
+  .field.is-invalid .control,
+  .field.is-invalid .control:hover,
+  .field.is-invalid .control:focus-within {
+    border-color: var(--error);
+    background: var(--error-fill);
+  }
+  .field.is-invalid .control:focus-within {
+    box-shadow: 0 0 0 3px rgb(240 160 139 / 0.2);
+  }
+  .err {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--error);
+  }
+  .err::before {
+    content: '!';
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 18px;
+    height: 18px;
+    border-radius: var(--radius-o);
+    background: var(--error);
+    color: var(--ink);
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+
+  /* ---------- Submit & success ---------- */
+  .rm__submit {
+    display: grid;
+    gap: 14px;
+    padding-top: 4px;
+  }
+  .rm__panel :global(.rm__btn) {
+    width: 100%;
+    min-height: 60px;
+    justify-content: space-between;
+    padding-left: 26px;
+    font-size: 1.0625rem;
+  }
+  .rm__consent {
+    color: var(--on-ink-muted);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+  .rm__form.is-sending [data-rm-submit] {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+  .rm__success {
+    display: grid;
+    gap: 14px;
+    justify-items: start;
+    padding: 12px 48px 8px 0;
+    outline: none;
+  }
+  .rm__success[hidden] {
+    display: none;
+  }
+  .rm__check {
+    position: relative;
+    width: 56px;
+    height: 56px;
+    border-radius: var(--radius-o);
+    border: 1px solid var(--paper);
+  }
+  .rm__check::after {
+    content: '';
+    position: absolute;
+    left: 19px;
+    top: 15px;
+    width: 16px;
+    height: 9px;
+    border-left: 1.5px solid var(--paper);
+    border-bottom: 1.5px solid var(--paper);
+    transform: rotate(-45deg);
+  }
+  .rm__success-title {
+    font-size: clamp(1.75rem, 3vw, 2.25rem);
+    font-weight: 500;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+  }
+  .rm__done {
+    margin-top: 10px;
+    min-height: 48px;
+    padding: 0 22px;
+    border-radius: var(--radius-o);
+    border: 1px solid var(--rule-on-ink);
+    font-weight: 500;
+    transition:
+      background-color var(--dur-1),
+      color var(--dur-1);
+  }
+  .rm__done:hover {
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  /* ---------- Phone ---------- */
+  @media (max-width: 767px) {
+    .rm {
+      padding: 12px;
+    }
+    .rm[open] {
+      place-items: end center;
+    }
+    .rm__panel {
+      padding: 24px 18px 22px;
+      border-radius: 20px;
+      animation-name: rm-in-sheet;
+    }
+    @keyframes rm-in-sheet {
+      from {
+        opacity: 0;
+        transform: translate3d(0, 40px, 0);
+      }
+    }
+    .rm__close {
+      top: 12px;
+      right: 12px;
+    }
+    .rm__head {
+      padding-right: 52px;
+      padding-bottom: 18px;
+    }
+    .rm__fields {
+      gap: 20px;
+    }
+    .rm__row {
+      grid-template-columns: 1fr;
+      gap: 20px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rm__panel,
+    .rm::backdrop {
+      animation: none;
+    }
+  }
+</style>

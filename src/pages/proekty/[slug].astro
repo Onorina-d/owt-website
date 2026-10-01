@@ -1,0 +1,337 @@
+---
+/**
+ * Project page template. Shows only what the source has: title, direction,
+ * photos and (optionally) video. Location / year / scope are deliberately
+ * absent — the old site does not publish them; add fields to data/projects.ts
+ * and they can be rendered in the meta row when real data exists.
+ */
+import type { GetStaticPaths } from 'astro';
+import PageLayout from '../../layouts/PageLayout.astro';
+import Breadcrumbs from '../../components/ui/Breadcrumbs.astro';
+import VideoPoster from '../../components/page/VideoPoster.astro';
+import CtaBand from '../../components/page/CtaBand.astro';
+import Img from '../../components/ui/Img.astro';
+import Icon from '../../components/ui/Icon.astro';
+import { projects, type Project } from '../../data/projects';
+import { routes, directionLinks } from '../../data/routes';
+
+export const getStaticPaths = (() =>
+  projects.map((project, i) => ({
+    params: { slug: project.slug },
+    props: { project, index: i, next: projects[(i + 1) % projects.length] },
+  }))) satisfies GetStaticPaths;
+
+interface Props {
+  project: Project;
+  index: number;
+  next: Project;
+}
+const { project: p, index, next } = Astro.props;
+const [lead, ...rest] = p.gallery.length ? p.gallery : [p.cover];
+const dirs = directionLinks.filter((d) => p.directions.includes(d.id));
+const photoCount = p.gallery.length || 1;
+
+// editorial rhythm: wide, pair, wide, pair…
+type Block = { kind: 'wide'; img: (typeof rest)[number] } | { kind: 'pair'; imgs: typeof rest };
+const blocks: Block[] = [];
+for (let i = 0; i < rest.length; ) {
+  if (blocks.length % 2 === 0) {
+    blocks.push({ kind: 'wide', img: rest[i] });
+    i += 1;
+  } else {
+    blocks.push({ kind: 'pair', imgs: rest.slice(i, i + 2) });
+    i += 2;
+  }
+}
+const poster = rest[Math.floor(rest.length / 2)] ?? lead;
+const topic = p.directions.includes('trees') ? 'trees' : p.directions.includes('hydro') ? 'hydro' : 'yacht';
+---
+
+<PageLayout
+  headerTone="over"
+  title={`${p.title} — проєкт OWT`}
+  description={`${p.fullTitle} — реалізований проєкт OWT. ${p.category}. Фото${p.video ? ' та відео' : ''} з об’єкта.`}
+>
+  <section class="ph theme-ink" data-header-over data-instant>
+    <div class="container">
+      <Breadcrumbs items={[{ href: routes.home, label: 'Головна' }, { href: routes.projects, label: 'Проєкти' }, { label: p.title }]} />
+      <p class="ph__index mono" data-reveal>
+        <span>P—{String(index + 1).padStart(2, '0')}</span>
+        <span class="ph__dim" aria-hidden="true"></span>
+        <span class="muted">{p.category}</span>
+      </p>
+      <h1 class="ph__title" data-lines><span class="line"><span>{p.fullTitle}</span></span></h1>
+      <dl class="ph__meta" data-reveal style="--d:3">
+        <div>
+          <dt class="mono muted">Напрям</dt>
+          <dd>
+            {
+              dirs.map((d, i) => (
+                <>
+                  {i > 0 && ' · '}
+                  <a href={d.href}>{d.label}</a>
+                </>
+              ))
+            }
+          </dd>
+        </div>
+        <div>
+          <dt class="mono muted">Матеріали</dt>
+          <dd>
+            {photoCount} фото{p.video ? ' · відео' : ''}
+          </dd>
+        </div>
+      </dl>
+    </div>
+    <div class="container">
+      <figure class="ph__cover media-frame" data-wipe>
+        <Img src={lead} alt={p.title} sizes="(min-width: 1760px) 1650px, 100vw" loading="eager" fetchpriority="high" />
+      </figure>
+    </div>
+  </section>
+
+  {
+    blocks.length > 0 && (
+      <section class="gal theme-ink" aria-label="Фото з об’єкта">
+        <div class="container gal__list">
+          {blocks.map((b) =>
+            b.kind === 'wide' ? (
+              <figure class="gal__wide media-frame" data-reveal>
+                <Img src={b.img} alt={`${p.title} — фото з об’єкта`} sizes="(min-width: 1760px) 1650px, 100vw" widths={[640, 1024, 1600]} />
+              </figure>
+            ) : (
+              <div class:list={['gal__pair', { 'gal__pair--single': b.imgs.length === 1 }]}>
+                {b.imgs.map((img, k) => (
+                  <figure class="gal__half media-frame" data-reveal style={`--d:${k}`}>
+                    <Img src={img} alt={`${p.title} — фото з об’єкта`} sizes="(min-width: 1024px) 48vw, 100vw" widths={[640, 1024, 1600]} />
+                  </figure>
+                ))}
+              </div>
+            ),
+          )}
+        </div>
+      </section>
+    )
+  }
+
+  {
+    p.video && (
+      <section class="vid theme-ink" aria-label="Відео">
+        <div class="container vid__inner">
+          <p class="mono muted">Відео з об’єкта</p>
+          <div data-reveal>
+            <VideoPoster video={p.video} poster={poster} title={p.title} />
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="about theme-paper">
+    <div class="container about__inner">
+      <p class="mono muted">Напрям робіт</p>
+      <ul class="about__list">
+        {
+          dirs.map((d) => (
+            <li>
+              <a class="about__link" href={d.href}>
+                <span class="about__title">{d.label}</span>
+                <span class="about__arrow" aria-hidden="true">
+                  <Icon name="arrow" size={20} />
+                </span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <nav class="next theme-stone" aria-label="Наступний проєкт">
+    <a class="container next__link" href={routes.project(next.slug)}>
+      <span class="next__text">
+        <span class="mono muted">Наступний проєкт</span>
+        <span class="next__title">{next.title}</span>
+        <span class="mono muted">{next.category}</span>
+      </span>
+      <span class="next__img media-frame">
+        <Img src={next.cover} alt="" widths={[320, 640, 960]} sizes="(min-width: 1024px) 26vw, 40vw" />
+      </span>
+    </a>
+  </nav>
+
+  <CtaBand topic={topic} title="Маєте схожу задачу?" text="Інженер OWT проаналізує вашу задачу та зорієнтує щодо бюджету і строків." />
+</PageLayout>
+
+<style>
+  .ph {
+    padding-top: calc(var(--header-h) + clamp(32px, 5vw, 72px));
+    padding-bottom: clamp(24px, 3vw, 40px);
+  }
+  .ph__index {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: clamp(32px, 5vw, 72px);
+  }
+  .ph__index > span:first-child {
+    flex: none;
+  }
+  .ph__dim {
+    flex: 1;
+    height: 1px;
+    background: var(--rule-on-ink);
+  }
+  .ph__title {
+    margin-top: 24px;
+    max-width: 18ch;
+    font-size: clamp(2.5rem, 6vw, 6.75rem);
+    font-weight: 500;
+    line-height: var(--lh-tight);
+    letter-spacing: -0.045em;
+    text-wrap: balance;
+  }
+  .ph__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px 64px;
+    margin: clamp(32px, 4vw, 56px) 0 clamp(32px, 4vw, 56px);
+    padding-top: 20px;
+    border-top: 1px solid var(--rule-on-ink);
+  }
+  .ph__meta div {
+    display: grid;
+    gap: 8px;
+  }
+  .ph__meta dd {
+    margin: 0;
+    font-size: 1.0625rem;
+  }
+  .ph__meta a {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+  .ph__cover {
+    aspect-ratio: 16 / 9;
+    --wipe-slant: 0.35;
+  }
+
+  .gal {
+    padding-bottom: clamp(56px, 7vw, 104px);
+  }
+  .gal__list {
+    display: grid;
+    gap: var(--col-gap);
+  }
+  .gal__wide {
+    aspect-ratio: 16 / 9;
+  }
+  .gal__pair {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--col-gap);
+  }
+  .gal__pair--single {
+    grid-template-columns: minmax(0, 0.5fr);
+  }
+  .gal__half {
+    aspect-ratio: 4 / 3;
+  }
+
+  .vid {
+    padding-bottom: var(--section-pad);
+  }
+  .vid__inner {
+    display: grid;
+    gap: 18px;
+  }
+
+  .about {
+    padding-block: clamp(72px, 9vw, 140px);
+  }
+  .about__inner {
+    display: grid;
+    gap: 20px;
+  }
+  .about__list {
+    border-top: 1px solid var(--rule-on-paper);
+  }
+  .about__link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--rule-on-paper);
+  }
+  .about__title {
+    font-size: clamp(1.75rem, 3.2vw, 3rem);
+    font-weight: 500;
+    letter-spacing: -0.035em;
+    line-height: 1.05;
+  }
+  .about__arrow {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 52px;
+    height: 52px;
+    border-radius: var(--radius-o);
+    border: 1px solid var(--rule-on-paper);
+    transition:
+      background-color var(--dur-1),
+      color var(--dur-1);
+  }
+  .about__link:hover .about__arrow {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .next {
+    padding-block: clamp(56px, 7vw, 104px);
+  }
+  .next__link {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 0.42fr);
+    align-items: center;
+    gap: var(--col-gap);
+  }
+  .next__text {
+    display: grid;
+    gap: 14px;
+  }
+  .next__title {
+    font-size: var(--fs-h2);
+    font-weight: 500;
+    line-height: var(--lh-heading);
+    letter-spacing: var(--track-tight);
+    text-wrap: balance;
+  }
+  .next__img {
+    aspect-ratio: 4 / 3;
+  }
+  .next__img :global(img) {
+    transition: transform 1400ms var(--ease-out);
+  }
+  .next__link:hover .next__img :global(img) {
+    transform: scale(1.06);
+  }
+
+  @media (max-width: 767px) {
+    .ph__cover,
+    .gal__wide {
+      aspect-ratio: 4 / 3;
+    }
+    .gal__pair,
+    .gal__pair--single {
+      grid-template-columns: 1fr;
+    }
+    .next__link {
+      grid-template-columns: 1fr;
+    }
+    .next__img {
+      grid-row: 1;
+    }
+  }
+</style>

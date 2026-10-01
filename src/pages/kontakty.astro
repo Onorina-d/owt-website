@@ -1,0 +1,219 @@
+---
+/**
+ * Contacts — direct channels first (phones, messengers, addresses with map
+ * links, socials), the consultation form beside them. Form is interface-only.
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import PageHead from '../components/page/PageHead.astro';
+import ConsultForm from '../components/forms/ConsultForm.astro';
+import Icon from '../components/ui/Icon.astro';
+import { phones, messengers, socials } from '../data/site';
+import { routes } from '../data/routes';
+
+const addresses = [
+  { city: 'Київ', line: 'вул. Володимира Івасюка, 6Б, корпус 1', q: 'Київ, вулиця Володимира Івасюка, 6Б' },
+  { city: 'Бородянка, Київська обл.', line: 'вул. Індустріальна, 2', q: 'Бородянка, вулиця Індустріальна, 2' },
+];
+---
+
+<PageLayout
+  title="Контакти — OWT · Ost West Technology"
+  description="Контакти OWT: +38 067 39 40 000, +38 067 24 00 166, Telegram, Viber, WhatsApp. Київ, вул. Володимира Івасюка, 6Б; Бородянка, вул. Індустріальна, 2."
+>
+  <PageHead
+    layout="type"
+    crumbs={[{ href: routes.home, label: 'Головна' }, { label: 'Контакти' }]}
+    label="Контакти"
+    title="Контакти"
+    lead="Залиште телефон — інженер OWT зв’яжеться з вами, проаналізує задачу та зорієнтує щодо бюджету і строків."
+  />
+
+  <section class="ct theme-ink" data-dock-stop>
+    <div class="container ct__grid">
+      <div class="ct__direct">
+        <div class="ct__group" data-reveal>
+          <p class="mono muted">Телефони</p>
+          <ul class="ct__phones">
+            {
+              phones.map((p) => (
+                <li>
+                  <a href={p.href}>{p.display}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div class="ct__group" data-reveal style="--d:1">
+          <p class="mono muted">Месенджери</p>
+          <ul class="ct__msg">
+            {
+              messengers.map((m) => (
+                <li>
+                  <a href={m.href} target="_blank" rel="noopener">
+                    <Icon name={m.id} size={20} />
+                    {m.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div class="ct__group" data-reveal style="--d:2">
+          <p class="mono muted">Адреси</p>
+          <ul class="ct__addr">
+            {
+              addresses.map((a) => (
+                <li>
+                  <span class="ct__city">{a.city}</span>
+                  <span class="muted">{a.line}</span>
+                  <a class="ct__map" href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(a.q)}`} target="_blank" rel="noopener">
+                    Відкрити на мапі <Icon name="arrow" size={14} />
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <div class="ct__group" data-reveal style="--d:3">
+          <p class="mono muted">Соцмережі</p>
+          <ul class="ct__social">
+            {
+              socials.map((s) => (
+                <li>
+                  <a href={s.href} target="_blank" rel="noopener">
+                    {s.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+
+        <ul class="ct__trust mono" data-reveal>
+          <li>Договір та ПДВ</li>
+          <li>Гарантія на всі конструкції</li>
+          <li>Реалізація під ключ</li>
+        </ul>
+      </div>
+
+      <div class="ct__form" id="request">
+        <ConsultForm locale="uk" />
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .ct {
+    padding-block: clamp(64px, 8vw, 120px) var(--section-pad);
+    scroll-margin-top: 0;
+  }
+  .ct__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 5fr) minmax(0, 6fr);
+    gap: 56px clamp(32px, 5vw, 96px);
+    align-items: start;
+  }
+  .ct__direct {
+    display: grid;
+    gap: 40px;
+  }
+  .ct__group {
+    display: grid;
+    gap: 14px;
+  }
+  .ct__phones a {
+    display: inline-block;
+    font-size: clamp(2rem, 3.6vw, 3.5rem);
+    font-weight: 450;
+    letter-spacing: -0.035em;
+    line-height: 1.15;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0% 1px no-repeat;
+    transition: background-size var(--dur-2) var(--ease-out);
+  }
+  .ct__phones a:hover {
+    background-size: 100% 1px;
+  }
+  .ct__msg {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .ct__msg a {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    height: 54px;
+    padding: 0 22px 0 18px;
+    border-radius: var(--radius-o);
+    border: 1px solid var(--rule-on-ink);
+    font-weight: 500;
+    transition:
+      background-color var(--dur-1),
+      color var(--dur-1),
+      border-color var(--dur-1);
+  }
+  .ct__msg a:hover {
+    background: var(--paper);
+    color: var(--ink);
+    border-color: var(--paper);
+  }
+  .ct__addr {
+    display: grid;
+    gap: 22px;
+  }
+  .ct__addr li {
+    display: grid;
+    gap: 4px;
+  }
+  .ct__city {
+    font-size: 1.125rem;
+    font-weight: 500;
+  }
+  .ct__map {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    justify-self: start;
+    margin-top: 4px;
+    font-size: 0.9375rem;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+  .ct__social {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 24px;
+  }
+  .ct__social a:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .ct__trust {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule-on-ink);
+    color: var(--on-ink-muted);
+  }
+  .ct__form {
+    scroll-margin-top: calc(var(--header-h) + 16px);
+  }
+  @media (max-width: 1023px) {
+    .ct__grid {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 767px) {
+    .ct__msg a {
+      flex: 1 1 auto;
+      justify-content: center;
+    }
+  }
+</style>

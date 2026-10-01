@@ -1,0 +1,260 @@
+---
+/**
+ * Closing CTA: a quiet full-bleed photograph carrying the invitation,
+ * then direct channels (phones, messengers, addresses) next to a short form.
+ */
+import SectionLabel from '../ui/SectionLabel.astro';
+import Img from '../ui/Img.astro';
+import Icon from '../ui/Icon.astro';
+import ConsultForm from '../forms/ConsultForm.astro';
+import { media } from '../../data/media';
+import { phones, messengers } from '../../data/site';
+import { getDict, type Locale } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getDict(locale).contact;
+---
+
+<section class="contact theme-ink" id="contact" aria-labelledby="contact-title">
+  <div class="contact__hero">
+    <div class="contact__img" aria-hidden="true">
+      <Img
+        src={media.pierGangway}
+        widths={[640, 960, 1280, 1600, 2048]}
+        sizes="100vw"
+        alt=""
+        loading="lazy"
+      />
+    </div>
+    <div class="container contact__intro">
+      <SectionLabel n="06" text={t.label} />
+      <h2 class="contact__title" id="contact-title" data-lines>
+        <span class="line"><span>{t.title}</span></span>
+      </h2>
+      <p class="contact__lead" data-reveal style="--d:2">{t.lead}</p>
+    </div>
+  </div>
+
+  <div class="container grid-12 contact__body" id="request">
+    <div class="contact__direct">
+      <h3 class="mono muted contact__h">{t.direct}</h3>
+
+      <div class="contact__group" data-reveal>
+        <p class="mono muted">{t.phonesLabel}</p>
+        <ul class="contact__phones">
+          {
+            phones.map((p) => (
+              <li>
+                <a href={p.href}>{p.display}</a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="contact__group" data-reveal style="--d:1">
+        <p class="mono muted">{t.messengersLabel}</p>
+        <ul class="contact__msg">
+          {
+            messengers.map((m) => (
+              <li>
+                <a href={m.href} target="_blank" rel="noopener">
+                  <Icon name={m.id} size={20} />
+                  <span>{m.label}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <div class="contact__group" data-reveal style="--d:2">
+        <p class="mono muted">{t.addressesLabel}</p>
+        <ul class="contact__addr">
+          {
+            t.addresses.map((a) => (
+              <li>
+                <span class="contact__city">{a.city}</span>
+                <span class="muted">{a.line}</span>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <ul class="contact__trust mono" data-reveal style="--d:3">
+        {t.trust.map((x) => <li>{x}</li>)}
+      </ul>
+    </div>
+
+    <div class="contact__form">
+      <ConsultForm locale={locale} />
+    </div>
+  </div>
+</section>
+
+<style>
+  .contact {
+    position: relative;
+  }
+  .contact__hero {
+    position: relative;
+    min-height: 92vh;
+    display: flex;
+    align-items: flex-end;
+    overflow: hidden;
+  }
+  .contact__img {
+    position: absolute;
+    inset: 0;
+  }
+  .contact__img::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, var(--ink) 0%, rgb(16 19 22 / 0.55) 45%, rgb(16 19 22 / 0.25) 100%);
+  }
+  .contact__img :global(picture),
+  .contact__img :global(img) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .contact__intro {
+    position: relative;
+    display: grid;
+    gap: 28px;
+    padding-bottom: clamp(48px, 7vw, 96px);
+  }
+  .contact__title {
+    font-size: var(--fs-display);
+    font-weight: 500;
+    line-height: var(--lh-tight);
+    letter-spacing: -0.045em;
+    max-width: 12ch;
+  }
+  .contact__lead {
+    max-width: 44ch;
+    font-size: var(--fs-lead);
+    color: rgb(241 239 234 / 0.78);
+  }
+
+  .contact__body {
+    padding-top: clamp(40px, 5vw, 72px);
+    padding-bottom: var(--section-pad);
+    border-top: 1px solid var(--rule-on-ink);
+    row-gap: 64px;
+  }
+  .contact__direct {
+    grid-column: 1 / span 5;
+    display: grid;
+    align-content: start;
+    gap: 40px;
+  }
+  .contact__form {
+    grid-column: 7 / -1;
+  }
+  .contact__h {
+    font-weight: 500;
+  }
+  .contact__group {
+    display: grid;
+    gap: 14px;
+  }
+  .contact__phones a {
+    display: inline-block;
+    font-size: clamp(1.75rem, 2.6vw, 2.75rem);
+    font-weight: 450;
+    letter-spacing: -0.03em;
+    line-height: 1.2;
+    font-variant-numeric: tabular-nums;
+    background: linear-gradient(currentColor, currentColor) 0 100% / 0% 1px no-repeat;
+    transition: background-size var(--dur-2) var(--ease-out);
+  }
+  .contact__phones a:hover {
+    background-size: 100% 1px;
+  }
+  .contact__msg {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .contact__msg a {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    height: 52px;
+    padding: 0 22px 0 18px;
+    border-radius: var(--radius-o);
+    border: 1px solid var(--rule-on-ink);
+    font-weight: 500;
+    transition:
+      background-color var(--dur-1),
+      color var(--dur-1),
+      border-color var(--dur-1);
+  }
+  .contact__msg a:hover {
+    background: var(--paper);
+    color: var(--ink);
+    border-color: var(--paper);
+  }
+  .contact__addr {
+    display: grid;
+    gap: 14px;
+  }
+  .contact__addr li {
+    display: grid;
+    gap: 2px;
+  }
+  .contact__city {
+    font-weight: 500;
+  }
+  .contact__trust {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule-on-ink);
+    color: var(--on-ink-muted);
+  }
+  .contact__trust li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .contact__trust li::before {
+    content: '';
+    width: 6px;
+    height: 6px;
+    background: currentColor;
+    transform: skewX(-33deg);
+  }
+
+  @media (max-width: 1023px) {
+    .contact__direct,
+    .contact__form {
+      grid-column: 1 / -1;
+    }
+    .contact__form {
+      order: -1;
+    }
+  }
+  @media (max-width: 767px) {
+    .contact__hero {
+      min-height: 78vh;
+    }
+    .contact__title {
+      font-size: clamp(2.5rem, 12vw, 3.5rem);
+    }
+    .contact__lead {
+      font-size: 1rem;
+    }
+    .contact__msg a {
+      flex: 1 1 auto;
+      justify-content: center;
+    }
+  }
+</style>

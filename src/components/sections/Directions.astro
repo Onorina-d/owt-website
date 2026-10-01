@@ -1,0 +1,367 @@
+---
+/**
+ * Three directions. Desktop: a full-bleed half-screen photograph stays pinned
+ * while the directions scroll past; each change wipes in along the logo
+ * diagonal. Mobile: every direction is its own image-led chapter.
+ */
+import SectionLabel from '../ui/SectionLabel.astro';
+import Img from '../ui/Img.astro';
+import Icon from '../ui/Icon.astro';
+import { media } from '../../data/media';
+import { routes } from '../../data/routes';
+import { getDict, type Locale } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const t = getDict(locale).directions;
+const total = String(t.items.length).padStart(2, '0');
+const pageOf: Record<string, string> = { hydro: routes.hydro, water: routes.water, trees: routes.trees };
+---
+
+<section class="dirs theme-paper" id="directions" aria-labelledby="dirs-title">
+  <header class="container grid-12 dirs__head">
+    <SectionLabel n="02" text={t.label} class="dirs__label" />
+    <h2 class="h2 dirs__title" id="dirs-title" data-lines>
+      <span class="line"><span>{t.title}</span></span>
+    </h2>
+    <p class="lead dirs__lead" data-reveal style="--d:2">{t.lead}</p>
+  </header>
+
+  <div class="dirs__body" data-dirs>
+    <div class="dirs__media" aria-hidden="true">
+      <div class="dirs__sticky">
+        {
+          t.items.map((item, i) => (
+            <div class:list={['dirs__frame', { 'is-active': i === 0 }]} data-dir-frame>
+              <Img
+                src={media[item.image]}
+                widths={[720, 960, 1440, 1920]}
+                sizes="50vw"
+                alt=""
+                loading="lazy"
+              />
+            </div>
+          ))
+        }
+        <div class="dirs__overlay mono">
+          <span>
+            <span data-dir-index>01</span>&thinsp;/&thinsp;{total}
+          </span>
+          <span class="dirs__overlay-spec" data-dir-spec>{t.items[0].spec}</span>
+        </div>
+      </div>
+    </div>
+
+    <ol class="dirs__list">
+      {
+        t.items.map((item, i) => (
+          <li class="dir" id={`dir-${item.id}`} data-dir data-spec={item.spec}>
+            <div class="dir__img" data-wipe>
+              <Img
+                src={media[item.image]}
+                widths={[640, 960, 1280]}
+                sizes="100vw"
+                alt=""
+                loading="lazy"
+              />
+              <span class="dir__img-n mono">{String(i + 1).padStart(2, '0')}</span>
+            </div>
+            <div class="dir__body">
+              <p class="dir__n mono" data-reveal>
+                {String(i + 1).padStart(2, '0')}&thinsp;/&thinsp;{total}
+              </p>
+              <h3 class="dir__title" data-lines>
+                <span class="line">
+                  <span>{item.title}</span>
+                </span>
+              </h3>
+              <p class="dir__text" data-reveal style="--d:1">
+                {item.text}
+              </p>
+              <ul class="dir__services" data-reveal style="--d:2">
+                {item.services.map((s) => (
+                  <li>
+                    <span>{s}</span>
+                  </li>
+                ))}
+              </ul>
+              <p class="dir__spec mono" data-reveal style="--d:3">
+                {item.spec}
+              </p>
+              <div class="dir__links" data-reveal style="--d:3">
+                {locale === 'uk' && (
+                  <a class="dir__cta" href={pageOf[item.id]}>
+                    <span>{t.more}</span>
+                    <Icon name="arrow" size={18} />
+                  </a>
+                )}
+                <a class="dir__cta dir__cta--quiet" href="#request" data-topic-link={item.topic}>
+                  <span>{t.cta}</span>
+                </a>
+              </div>
+            </div>
+          </li>
+        ))
+      }
+    </ol>
+  </div>
+</section>
+
+<style>
+  .dirs {
+    padding-top: var(--section-pad);
+  }
+  .dirs__head {
+    row-gap: 28px;
+    padding-bottom: clamp(56px, 8vw, 128px);
+  }
+  .dirs :global(.dirs__label) {
+    grid-column: 1 / -1;
+  }
+  .dirs__title {
+    grid-column: 1 / span 7;
+  }
+  .dirs__lead {
+    grid-column: 9 / -1;
+    align-self: end;
+  }
+
+  .dirs__body {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    border-top: 1px solid var(--rule-on-paper);
+  }
+  .dirs__media {
+    position: relative;
+  }
+  .dirs__sticky {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    height: 100svh;
+    overflow: hidden;
+    background: var(--ink);
+  }
+  .dirs__frame {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    clip-path: polygon(0 0, 0 0, -70% 100%, 0 100%);
+    transition: clip-path 1400ms var(--ease-in-out);
+  }
+  .dirs__frame.is-active {
+    clip-path: polygon(0 0, 170% 0, 100% 100%, 0 100%);
+    z-index: 2;
+  }
+  .dirs__frame.is-prev {
+    clip-path: polygon(0 0, 170% 0, 100% 100%, 0 100%);
+    z-index: 1;
+    transition: none;
+  }
+  .dirs__frame :global(picture),
+  .dirs__frame :global(img) {
+    width: 100%;
+    height: 100%;
+  }
+  .dirs__frame :global(img) {
+    object-fit: cover;
+    transform: scale(1.08);
+    transition: transform 2400ms var(--ease-out);
+  }
+  .dirs__frame.is-active :global(img) {
+    transform: scale(1);
+  }
+  .dirs__overlay {
+    position: absolute;
+    z-index: 3;
+    left: var(--gutter);
+    right: var(--gutter);
+    bottom: 28px;
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    padding-top: 16px;
+    color: var(--paper);
+    border-top: 1px solid rgb(241 239 234 / 0.35);
+    text-shadow: 0 1px 12px rgb(0 0 0 / 0.35);
+  }
+  .dirs__overlay-spec {
+    text-align: right;
+    transition: opacity 400ms var(--ease-out);
+  }
+  .dirs__overlay-spec.is-swapping {
+    opacity: 0;
+  }
+
+  .dir {
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    padding: clamp(80px, 10vh, 140px) var(--gutter) clamp(80px, 10vh, 140px) clamp(40px, 6vw, 120px);
+  }
+  .dir + .dir {
+    border-top: 1px solid var(--rule-on-paper);
+  }
+  .dir__img {
+    display: none;
+  }
+  .dir__body {
+    max-width: 560px;
+  }
+  .dir__n {
+    color: var(--on-paper-muted);
+    margin-bottom: 28px;
+  }
+  .dir__title {
+    font-size: clamp(2.25rem, 4vw, 4.25rem);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+  }
+  .dir__text {
+    margin-top: 28px;
+    font-size: var(--fs-lead);
+    line-height: 1.5;
+    color: var(--on-paper-muted);
+    text-wrap: pretty;
+  }
+  .dir__services {
+    margin-top: 40px;
+    border-top: 1px solid var(--rule-on-paper);
+  }
+  .dir__services li {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--rule-on-paper);
+    font-size: 1.0625rem;
+    font-weight: 450;
+  }
+  .dir__services li::before {
+    content: '';
+    width: 10px;
+    height: 1px;
+    background: currentColor;
+    flex: none;
+  }
+  .dir__spec {
+    margin-top: 24px;
+    color: var(--on-paper-muted);
+  }
+  .dir__links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px 32px;
+    margin-top: 40px;
+  }
+  .dir__cta--quiet {
+    color: var(--on-paper-muted);
+  }
+  .dir__cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    padding-bottom: 6px;
+    font-weight: 500;
+    background: linear-gradient(currentColor, currentColor) 0 100% / 100% 1px no-repeat;
+    transition: background-size var(--dur-2) var(--ease-out);
+  }
+  .dir__cta :global(svg) {
+    transition: transform var(--dur-2) var(--ease-out);
+  }
+  .dir__cta:hover {
+    background-size: 0% 1px;
+    background-position: 100% 100%;
+  }
+  .dir__cta:hover :global(svg) {
+    transform: translateX(6px);
+  }
+
+  /* ---------- Tablet ---------- */
+  @media (max-width: 1023px) {
+    .dirs__title {
+      grid-column: 1 / -1;
+    }
+    .dirs__lead {
+      grid-column: 1 / span 9;
+    }
+    .dir {
+      padding-left: clamp(28px, 4vw, 48px);
+    }
+    .dirs__overlay-spec {
+      display: none;
+    }
+  }
+
+  /* ---------- Mobile: image-led chapters ---------- */
+  @media (max-width: 767px) {
+    .dirs__lead {
+      grid-column: 1 / -1;
+    }
+    .dirs__body {
+      display: block;
+      border-top: 0;
+    }
+    .dirs__media {
+      display: none;
+    }
+    .dir {
+      display: block;
+      min-height: 0;
+      padding: 0 0 72px;
+    }
+    .dir + .dir {
+      border-top: 0;
+    }
+    .dir__img {
+      display: block;
+      position: relative;
+      aspect-ratio: 4 / 5;
+      overflow: hidden;
+      background: var(--ink);
+      --wipe-slant: 0.55;
+    }
+    .dir__img :global(picture),
+    .dir__img :global(img) {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .dir__img-n {
+      position: absolute;
+      left: var(--gutter);
+      bottom: 18px;
+      color: var(--paper);
+      font-size: 0.75rem;
+    }
+    .dir__body {
+      padding: 32px var(--gutter) 0;
+    }
+    .dir__n {
+      display: none;
+    }
+    .dir__title {
+      font-size: clamp(2.125rem, 9.6vw, 2.75rem);
+    }
+    .dir__text {
+      margin-top: 18px;
+      font-size: 1rem;
+    }
+    .dir__services {
+      margin-top: 28px;
+    }
+    .dir__services li {
+      padding: 14px 0;
+      font-size: 1rem;
+    }
+    .dir__links {
+      margin-top: 28px;
+    }
+  }
+</style>

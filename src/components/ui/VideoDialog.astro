@@ -1,0 +1,115 @@
+---
+/**
+ * Modal player for OWT’s YouTube footage. The iframe (youtube-nocookie) is only
+ * created when the dialog opens, so nothing loads from YouTube before that.
+ */
+import Icon from './Icon.astro';
+import { getDict, type Locale } from '../../i18n';
+
+interface Props {
+  locale: Locale;
+}
+const { locale } = Astro.props;
+const d = getDict(locale);
+const t = d.video;
+---
+
+<dialog class="vd" data-video-dialog aria-labelledby="vd-title">
+  <div class="vd__inner">
+    <div class="vd__top">
+      <p class="mono" id="vd-title">{t.title}</p>
+      <button class="vd__close" type="button" data-video-close>
+        <span>{d.ui.close}</span>
+        <Icon name="close" size={20} />
+      </button>
+    </div>
+    <div class="vd__frame" data-video-frame></div>
+    <ul class="vd__list" role="list">
+      {
+        t.items.map((v, i) => (
+          <li>
+            <button class="vd__tab mono" type="button" data-video-tab={v.id}>
+              <span>{String(i + 1).padStart(2, '0')}</span>
+              {v.label}
+            </button>
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+</dialog>
+
+<style>
+  .vd {
+    width: 100%;
+    max-width: none;
+    height: 100%;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgb(10 12 14 / 0.96);
+    color: var(--paper);
+    overscroll-behavior: contain;
+  }
+  .vd::backdrop {
+    background: transparent;
+  }
+  .vd[open] {
+    animation: vd-in 600ms var(--ease-out);
+  }
+  @keyframes vd-in {
+    from {
+      opacity: 0;
+    }
+  }
+  .vd__inner {
+    height: 100%;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    gap: 20px;
+    padding: 20px var(--gutter) max(24px, env(safe-area-inset-bottom));
+  }
+  .vd__top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .vd__close {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+  .vd__frame {
+    display: grid;
+    place-items: center;
+    min-height: 0;
+  }
+  .vd__frame :global(iframe) {
+    width: min(100%, calc((100vh - 220px) * 16 / 9));
+    aspect-ratio: 16 / 9;
+    border: 0;
+    background: #000;
+  }
+  .vd__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 28px;
+    border-top: 1px solid var(--rule-on-ink);
+    padding-top: 16px;
+  }
+  .vd__tab {
+    display: inline-flex;
+    gap: 12px;
+    padding: 8px 0;
+    color: var(--on-ink-muted);
+    transition: color var(--dur-1);
+  }
+  .vd__tab:hover,
+  .vd__tab[aria-current='true'] {
+    color: var(--paper);
+  }
+</style>

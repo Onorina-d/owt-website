@@ -1,0 +1,378 @@
+---
+/**
+ * Fleet & rental. Machines and specifications exactly as listed on the old
+ * rental page; dredger soil types and slurry range from the digging page.
+ * Photos are captioned generically: the old site does not say which unit is which.
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import PageHead from '../components/page/PageHead.astro';
+import SectionHead from '../components/page/SectionHead.astro';
+import Archive from '../components/page/Archive.astro';
+import OtherDirections from '../components/page/OtherDirections.astro';
+import CtaBand from '../components/page/CtaBand.astro';
+import Button from '../components/ui/Button.astro';
+import Icon from '../components/ui/Icon.astro';
+import Img from '../components/ui/Img.astro';
+import { media } from '../data/media';
+import { archive } from '../data/archive';
+import { routes } from '../data/routes';
+
+const reach = [
+  { name: 'JCB 220', boom: 9.5 },
+  { name: 'JCB 220 Long Reach', boom: 16 },
+  { name: 'JCB 220, плаваючий', boom: 16 },
+  { name: 'JCB 360', boom: 22.4 },
+];
+const maxReach = 22.4;
+const fmt = (n: number) => String(n).replace('.', ',');
+
+const groups = [
+  {
+    id: 'ekskavatory',
+    title: 'Екскаватори',
+    items: [
+      { name: 'JCB 220', key: '9,5', unit: 'м стріла', specs: ['Ківш 1,2–1,5 м³', 'Широкі гусениці'] },
+      { name: 'JCB 220 Long Reach', key: '16', unit: 'м стріла', specs: ['Ківш 0,8 м³', 'Широкі гусениці'] },
+      { name: 'JCB 360', key: '22,4', unit: 'м стріла', specs: ['Ківш 0,8 м³', 'Широкі гусениці'] },
+      { name: 'JCB 220, плаваючий', key: '16', unit: 'м стріла', specs: ['Понтонні гусениці', 'Ківш 0,8 м³'] },
+      { name: 'Міні-екскаватори JCB 8025 та JCB 8050', key: '', unit: '', specs: ['Гумові гусениці'] },
+    ],
+  },
+  {
+    id: 'zemsnaryady',
+    title: 'Земснаряди',
+    items: [{ name: 'Земснаряди', key: '5–400', unit: 'м³/год по ґрунту', specs: ['Мул, пісок, глина, гравій', 'Переміщення пульпи до 2 км'] }],
+  },
+  {
+    id: 'buldozery',
+    title: 'Бульдозери',
+    items: [{ name: 'CAT D4, D6', key: '', unit: '', specs: ['Бульдозери'] }],
+  },
+  {
+    id: 'transport',
+    title: 'Спецтранспорт',
+    items: [{ name: 'Болотохідні автомобілі КрАЗ', key: '', unit: '', specs: ['Болотохідні'] }],
+  },
+  {
+    id: 'pontony',
+    title: 'Понтони',
+    items: [{ name: 'Модульні понтони', key: '', unit: '', specs: ['Пластикові', 'Оренда'] }],
+  },
+];
+let counter = 0;
+---
+
+<PageLayout
+  title="Техніка в оренду — екскаватори JCB, земснаряди, бульдозери · OWT"
+  description="Оренда спецтехніки OWT: екскаватори JCB 220, JCB 220 Long Reach, JCB 360, плаваючий екскаватор, міні-екскаватори, земснаряди 5–400 м³/год, бульдозери CAT D4/D6, болотохідні КрАЗ, модульні понтони."
+>
+  <PageHead
+    layout="split"
+    crumbs={[{ href: routes.home, label: 'Головна' }, { label: 'Техніка' }]}
+    label="Оренда техніки"
+    title="Техніка"
+    lead="Здаємо в оренду спеціалізовану сучасну техніку для виконання робіт будь-якої складності."
+    image={media.jcbPair}
+    imageAlt="Екскаватори JCB на майданчику OWT"
+    caption="Техніка OWT"
+  >
+    <div slot="actions" class="head-actions" data-reveal style="--d:4">
+      <Button href={routes.request('rental')}>Запит на оренду</Button>
+    </div>
+  </PageHead>
+
+  <!-- 01 — Reach comparison -->
+  <section class="sec theme-ink">
+    <div class="container">
+      <SectionHead n="01" label="Виліт стріли" title="Від 9,5 до 22,4 метра" lead="Екскаватори JCB з орендного парку — порівняння довжини стріли." />
+      <ul class="reach" data-reveal>
+        {
+          reach.map((r, i) => (
+            <li class="reach__row" style={`--w:${r.boom / maxReach}; --i:${i}`}>
+              <span class="reach__name">{r.name}</span>
+              <span class="reach__track" aria-hidden="true">
+                <span class="reach__bar" />
+              </span>
+              <span class="reach__val">
+                {fmt(r.boom)}
+                <small>м</small>
+              </span>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </section>
+
+  <!-- 02 — Catalogue -->
+  <section class="sec theme-paper">
+    <div class="container">
+      <SectionHead n="02" label="Каталог" title="Парк техніки в оренду" />
+      <div class="cat">
+        {
+          groups.map((g) => (
+            <section class="cat__group" id={g.id} aria-labelledby={`${g.id}-t`}>
+              <h3 class="cat__gtitle mono" id={`${g.id}-t`}>
+                {g.title}
+                <span class="muted">{String(g.items.length).padStart(2, '0')}</span>
+              </h3>
+              <ul>
+                {g.items.map((m) => {
+                  counter++;
+                  return (
+                    <li class="machine" data-reveal>
+                      <span class="machine__n mono">{String(counter).padStart(2, '0')}</span>
+                      <span class="machine__name">{m.name}</span>
+                      <span class="machine__key">
+                        {m.key && (
+                          <>
+                            <span class="machine__num">{m.key}</span>
+                            <span class="machine__unit mono">{m.unit}</span>
+                          </>
+                        )}
+                      </span>
+                      <span class="machine__specs">
+                        {m.specs.map((s) => (
+                          <span>{s}</span>
+                        ))}
+                      </span>
+                      <a class="machine__ask" href={routes.request('rental')} aria-label={`Запит на оренду: ${m.name}`}>
+                        <Icon name="arrow" size={18} />
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- 03 — On site -->
+  <section class="sec theme-stone">
+    <div class="container">
+      <SectionHead n="03" label="На об’єктах" title="Техніка в роботі" />
+      <div class="onsite">
+        <figure class="onsite__main" data-reveal>
+          <div class="media-frame onsite__img">
+            <Img src={media.jcbShore} alt="Екскаватор JCB на березі водойми — роботи OWT" widths={[640, 960, 1280, 1600]} sizes="(min-width: 1024px) 50vw, 100vw" />
+          </div>
+          <figcaption class="mono muted">Екскаватор на березі водойми — роботи OWT</figcaption>
+        </figure>
+        <figure class="onsite__side" data-reveal style="--d:1">
+          <div class="media-frame onsite__img onsite__img--tall">
+            <Img src={media.longreach} alt="Екскаватор з довгою стрілою на об’єкті OWT" widths={[640, 960, 1280]} sizes="(min-width: 1024px) 30vw, 100vw" />
+          </div>
+          <figcaption class="mono muted">Екскаватор з довгою стрілою</figcaption>
+        </figure>
+      </div>
+      <div class="onsite__archive">
+        <Archive groups={[{ title: 'Техніка OWT на об’єктах', images: archive('fleet') }]} />
+      </div>
+    </div>
+  </section>
+
+  <OtherDirections n="04" current="fleet" />
+  <CtaBand
+    topic="rental"
+    title="Потрібна техніка на об’єкт?"
+    text="Напишіть, яка техніка й на який термін потрібна — підберемо з парку OWT."
+    cta="Запит на оренду"
+  />
+</PageLayout>
+
+<style>
+  .head-actions {
+    margin-top: 12px;
+  }
+  .sec {
+    padding-block: var(--section-pad);
+  }
+
+  /* reach chart */
+  .reach {
+    display: grid;
+    border-top: 1px solid var(--rule-on-ink);
+  }
+  .reach__row {
+    display: grid;
+    grid-template-columns: minmax(160px, 0.9fr) minmax(0, 3fr) 6em;
+    align-items: center;
+    gap: 24px;
+    padding: clamp(18px, 2.2vw, 28px) 0;
+    border-bottom: 1px solid var(--rule-on-ink);
+  }
+  .reach__name {
+    font-size: 1.0625rem;
+    font-weight: 450;
+  }
+  .reach__track {
+    position: relative;
+    height: 2px;
+    background: var(--rule-on-ink);
+  }
+  .reach__bar {
+    position: absolute;
+    left: 0;
+    top: -5px;
+    height: 12px;
+    width: calc(var(--w) * 100%);
+    border-radius: 999px;
+    background: var(--paper);
+    transform-origin: left;
+    transition: transform 1600ms var(--ease-out);
+    transition-delay: calc(var(--i) * 120ms);
+  }
+  :global(.js) .reach:not(.is-in) .reach__bar {
+    transform: scaleX(0);
+  }
+  .reach__val {
+    font-size: clamp(1.75rem, 3vw, 3rem);
+    font-weight: 400;
+    letter-spacing: -0.05em;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+  .reach__val small {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+    color: var(--on-ink-muted);
+    margin-left: 6px;
+  }
+
+  /* catalogue */
+  .cat {
+    display: grid;
+    gap: clamp(40px, 5vw, 72px);
+  }
+  .cat__group {
+    scroll-margin-top: 120px;
+  }
+  .cat__gtitle {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--ink);
+    font-weight: 500;
+  }
+  .machine {
+    display: grid;
+    grid-template-columns: 3.5em minmax(0, 1.4fr) minmax(0, 1fr) minmax(0, 1.2fr) 48px;
+    align-items: center;
+    gap: 20px;
+    padding: clamp(18px, 2vw, 26px) 0;
+    border-bottom: 1px solid var(--rule-on-paper);
+  }
+  .machine__n {
+    color: var(--on-paper-muted);
+  }
+  .machine__name {
+    font-size: clamp(1.25rem, 1.8vw, 1.75rem);
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    line-height: 1.1;
+  }
+  .machine__key {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+  .machine__num {
+    font-size: clamp(1.75rem, 2.6vw, 2.5rem);
+    font-weight: 400;
+    letter-spacing: -0.05em;
+    line-height: 1;
+  }
+  .machine__unit {
+    color: var(--on-paper-muted);
+    text-transform: none;
+    letter-spacing: 0.04em;
+  }
+  .machine__specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .machine__specs span {
+    padding: 6px 12px;
+    border-radius: var(--radius-o);
+    border: 1px solid var(--rule-on-paper);
+    font-size: 0.875rem;
+  }
+  .machine__ask {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-o);
+    border: 1px solid var(--rule-on-paper);
+    transition:
+      background-color var(--dur-1),
+      color var(--dur-1),
+      border-color var(--dur-1);
+  }
+  .machine__ask:hover {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+
+  /* on site */
+  .onsite {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+    gap: var(--col-gap);
+    align-items: end;
+  }
+  .onsite figure {
+    display: grid;
+    gap: 12px;
+  }
+  .onsite__img {
+    aspect-ratio: 4 / 3;
+  }
+  .onsite__img--tall {
+    aspect-ratio: 4 / 5;
+  }
+  .onsite__archive {
+    margin-top: clamp(48px, 6vw, 88px);
+  }
+
+  @media (max-width: 1023px) {
+    .machine {
+      grid-template-columns: 3em minmax(0, 1fr) 44px;
+      gap: 8px 16px;
+    }
+    .machine__key,
+    .machine__specs {
+      grid-column: 2;
+    }
+    .machine__ask {
+      grid-column: 3;
+      grid-row: 1 / span 3;
+    }
+    .onsite {
+      grid-template-columns: 1fr;
+    }
+    .onsite__img--tall {
+      aspect-ratio: 4 / 3;
+    }
+  }
+  @media (max-width: 767px) {
+    .reach__row {
+      grid-template-columns: minmax(0, 1fr) 5em;
+      gap: 10px 16px;
+    }
+    .reach__track {
+      grid-column: 1 / -1;
+      grid-row: 2;
+    }
+    .head-actions :global(.btn) {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+</style>

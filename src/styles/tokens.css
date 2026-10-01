@@ -1,0 +1,83 @@
+/* OWT design tokens.
+   Palette is built from the logo ink and neutral, slightly warm stone tones;
+   photography provides the colour. */
+
+@property --reveal {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+:root {
+  /* Colour */
+  --ink: #101316;
+  --ink-2: #171b1f;
+  --ink-3: #22272c;
+  --paper: #f1efea;
+  --paper-2: #e6e3dc;
+  --stone: #b8b3a9;
+  --steel: #7b8085;
+  --mist: #c9ccce;
+
+  --on-ink: #f1efea;
+  --on-ink-muted: rgb(241 239 234 / 0.62);
+  --on-paper: #101316;
+  --on-paper-muted: rgb(16 19 22 / 0.6);
+
+  --rule-on-ink: rgb(241 239 234 / 0.16);
+  --rule-on-paper: rgb(16 19 22 / 0.14);
+
+  /* Typography */
+  --font-sans: 'Onest Variable', 'Onest Fallback', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --fs-mega: clamp(3.25rem, 9.2vw, 10.5rem);
+  --fs-display: clamp(2.75rem, 7vw, 8rem);
+  --fs-h2: clamp(2.25rem, 5.2vw, 5.75rem);
+  --fs-h3: clamp(1.75rem, 3.2vw, 3.5rem);
+  --fs-h4: clamp(1.25rem, 1.6vw, 1.625rem);
+  --fs-statement: clamp(1.75rem, 3.6vw, 3.75rem);
+  --fs-lead: clamp(1.0625rem, 1.25vw, 1.3125rem);
+  --fs-body: 1rem;
+  --fs-small: 0.875rem;
+  --fs-mono: 0.6875rem;
+
+  --lh-tight: 0.92;
+  --lh-heading: 1.02;
+  --lh-body: 1.55;
+  --track-tight: -0.035em;
+  --track-mono: 0.14em;
+
+  /* Layout */
+  --gutter: clamp(16px, 3.4vw, 56px);
+  --col-gap: clamp(12px, 1.6vw, 28px);
+  --max: 1760px;
+  --header-h: 76px;
+  --section-pad: clamp(96px, 14vw, 220px);
+
+  /* Shape — the only radius in the system, echoing the counter of the “O”. */
+  --radius-o: 999px;
+  /* Form geometry: softer than the pill CTAs, never sharp. Panel = field + its inset. */
+  --radius-field: 14px;
+  --radius-panel: 24px;
+  /* Photos: framed images inside the grid share the field radius; full-bleed images stay square. */
+  --radius-media: var(--radius-field);
+
+  /* Logo diagonal (≈57° stroke of the “W”) expressed as horizontal offset per height. */
+  --slant: 0.65;
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --ease-soft: cubic-bezier(0.33, 1, 0.68, 1);
+  --dur-1: 240ms;
+  --dur-2: 600ms;
+  --dur-3: 1100ms;
+  --dur-4: 1600ms;
+}
+
+@media (max-width: 767px) {
+  :root {
+    --header-h: 64px;
+  }
+}

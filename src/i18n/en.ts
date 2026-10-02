@@ -166,10 +166,9 @@ const en: Dict = {
     direct: 'Contact us directly',
     phonesLabel: 'Phone',
     messengersLabel: 'Messengers',
-    addressesLabel: 'Addresses',
+    addressesLabel: 'Address',
     addresses: [
-      { city: 'Kyiv', line: '6B Volodymyra Ivasiuka St, building 1' },
-      { city: 'Borodianka, Kyiv region', line: '2 Industrialna St' },
+      { city: 'Kyiv', line: '6B Volodymyra Ivasiuka Avenue, building 1' },
     ],
     trust: ['Contract and VAT', 'Warranty on all structures', 'Turnkey delivery'],
     form: {

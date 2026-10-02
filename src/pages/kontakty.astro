@@ -11,14 +11,13 @@ import { phones, messengers, socials } from '../data/site';
 import { routes } from '../data/routes';
 
 const addresses = [
-  { city: 'Київ', line: 'вул. Володимира Івасюка, 6Б, корпус 1', q: 'Київ, вулиця Володимира Івасюка, 6Б' },
-  { city: 'Бородянка, Київська обл.', line: 'вул. Індустріальна, 2', q: 'Бородянка, вулиця Індустріальна, 2' },
+  { city: 'Київ', line: 'проспект Володимира Івасюка, 6Б, корпус 1', q: 'Київ, проспект Володимира Івасюка, 6Б' },
 ];
 ---
 
 <PageLayout
   title="Контакти — OWT · Ost West Technology"
-  description="Контакти OWT: +38 067 39 40 000, +38 067 24 00 166, Telegram, Viber, WhatsApp. Київ, вул. Володимира Івасюка, 6Б; Бородянка, вул. Індустріальна, 2."
+  description="Контакти OWT: +38 067 39 40 000, +38 067 24 00 166, Telegram, Viber, WhatsApp. Київ, проспект Володимира Івасюка, 6Б."
 >
   <PageHead
     layout="type"
@@ -61,7 +60,7 @@ const addresses = [
         </div>
 
         <div class="ct__group" data-reveal style="--d:2">
-          <p class="mono muted">Адреси</p>
+          <p class="mono muted">Адреса</p>
           <ul class="ct__addr">
             {
               addresses.map((a) => (
